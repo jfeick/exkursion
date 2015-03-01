@@ -1,29 +1,32 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="de.uni_weimar.m18.exkursion.DownloadProgress">
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center">
 
-    <!-- TODO: Update blank fragment layout -->
-
-    <LinearLayout
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_gravity="center">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Downloading..."
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:layout_gravity="center" />
 
         <ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/progressBar"
+            android:layout_gravity="center"
             android:layout_marginLeft="50dp"
             android:layout_marginRight="50dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Downloading..."
-            android:id="@+id/textView2"
-            android:layout_gravity="center" />
+            android:id="@+id/textPercentage" />
+
     </LinearLayout>
-</FrameLayout>

@@ -26,8 +26,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.logging.Level;
 
-import de.uni_weimar.m18.exkursion.data.LevelContract;
+import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -45,18 +46,19 @@ public class LevelPrepareFragment extends Fragment
 
     private static final int LEVEL_LOADER = 0;
 
+    /*
     private static final String[] LEVEL_COLUMNS = {
-            LevelContract.LevelEntry.TABLE_NAME + "." + LevelContract.LevelEntry._ID,
-            LevelContract.LevelEntry.COLUMN_PATH,
-            LevelContract.LevelEntry.COLUMN_TITLE,
-            LevelContract.LevelEntry.COLUMN_MD5SUM
+            LevelContractOLD.LevelEntry.TABLE_NAME + "." + LevelContractOLD.LevelEntry._ID,
+            LevelContractOLD.LevelEntry.COLUMN_PATH,
+            LevelContractOLD.LevelEntry.COLUMN_TITLE,
+            LevelContractOLD.LevelEntry.COLUMN_MD5SUM
     };
 
     private static final int COL_LEVEL_ID = 0;
     private static final int COL_LEVEL_PATH = 1;
     private static final int COL_LEVEL_TITLE = 2;
     private static final int COL_LEVEL_MD5SUM = 3;
-
+    */
     private ProgressDialog prgDialog;
     public static final int progress_bar_type = 0;
 
@@ -106,7 +108,7 @@ public class LevelPrepareFragment extends Fragment
         return new CursorLoader(
                 getActivity(),
                 intent.getData(),
-                LEVEL_COLUMNS,
+                /* LEVEL_COLUMNS */ LevelColumns.ALL_COLUMNS,
                 null,
                 null,
                 null
@@ -121,11 +123,15 @@ public class LevelPrepareFragment extends Fragment
             return;
         }
 
-        String path = data.getString(COL_LEVEL_PATH);
-        String title = data.getString(COL_LEVEL_TITLE);
-        String md5sum = data.getString(COL_LEVEL_MD5SUM);
+        //String path = data.getString(COL_LEVEL_PATH);
+        //String title = data.getString(COL_LEVEL_TITLE);
+        //String md5sum = data.getString(COL_LEVEL_MD5SUM);
 
-        mLevelInfo = String.format("Path: %s - Title: \"%s\" - MD5 hash: %s", path, title, md5sum);
+        String path = data.getString(data.getColumnIndex(LevelColumns.BASE_PATH));
+        String title = data.getString(data.getColumnIndex(LevelColumns.TITLE));
+        //String md5sum = data.getString(COL_LEVEL_MD5SUM);
+
+        mLevelInfo = String.format("Path: %s - Title: \"%s\" - MD5 hash: %s", path, title, "bullshit_hash");
         TextView tv = (TextView)getView().findViewById(R.id.levelInfo_text);
         tv.setText(mLevelInfo);
 

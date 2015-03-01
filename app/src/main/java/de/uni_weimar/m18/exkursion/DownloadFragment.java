@@ -28,6 +28,8 @@ public class DownloadFragment extends Fragment {
 
     public void startDownload(String path) {
         Log.v(LOG_TAG, "received Signal to start download for: " + path);
+        DownloadLevelTask downloadLevelTask = new DownloadLevelTask();
+        downloadLevelTask.execute();
     }
 
     @Override
@@ -62,6 +64,7 @@ public class DownloadFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             for (int i = 0; !isCancelled() && i < 100; ++i) {
+                //Log.v(LOG_TAG, "publishProgress(" + i + "%)");
                 SystemClock.sleep(100);
                 publishProgress(i);
             }

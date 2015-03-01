@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import de.uni_weimar.m18.exkursion.data.LevelContract;
+import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
 
 /**
  * Created by stu on 22.02.2015.
@@ -20,9 +20,8 @@ public class LevelAdapter extends CursorAdapter {
     }
 
     private String convertCursorRowToUXFormat(Cursor cursor) {
-        //String title;
-        //int idx_title = cursor.getColumnIndex(LevelContract.LevelEntry.COLUMN_TITLE);
-        String title = cursor.getString(LevelListFragment.COL_LEVEL_TITLE);
+        int idx_title = cursor.getColumnIndex(LevelColumns.TITLE);
+        String title = cursor.getString(idx_title);
         return title;
     }
 

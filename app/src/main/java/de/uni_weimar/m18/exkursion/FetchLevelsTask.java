@@ -1,16 +1,15 @@
 package de.uni_weimar.m18.exkursion;
 
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONArray;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,14 +17,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Vector;
-import java.util.logging.Level;
+import java.util.ArrayList;
 
-import de.uni_weimar.m18.exkursion.data.LevelContract;
+import de.uni_weimar.m18.exkursion.data.LevelListJSON;
+import de.uni_weimar.m18.exkursion.data.files.FilesColumns;
+import de.uni_weimar.m18.exkursion.data.files.FilesContentValues;
+import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
+import de.uni_weimar.m18.exkursion.data.level.LevelContentValues;
+import de.uni_weimar.m18.exkursion.data.level.LevelCursor;
+import de.uni_weimar.m18.exkursion.data.level.LevelSelection;
 
-/**
- * Created by stu on 22.02.2015.
- */
 public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
 
     private final String LOG_TAG = FetchLevelsTask.class.getSimpleName();
@@ -41,100 +42,94 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
 
     private boolean DEBUG = true;
 
-    long addLevel(String path, String title, String md5sum) {
+    private void syncLevelData(LevelListJSON levelList) {
+        LevelListJSON.LevelJSON[] levels = levelList.getLevels();
 
-        // TODO
-        // this method stinks - we need to check the md5hash for insertion-updates and download-updates
+        // query every existing levels first and delete entries which are not in levelList
+        // TODO complete deletion routine
+        {
+            LevelSelection levelSelection = new LevelSelection();
+            String[] projection = {LevelColumns._ID, LevelColumns.BASE_PATH};
+            LevelCursor levelCursor = levelSelection.query(mContext.getContentResolver(), projection);
 
-        long levelId;
-
-        // check if the level with this path exists in the db
-        Cursor levelCursor = mContext.getContentResolver().query(
-                LevelContract.LevelEntry.CONTENT_URI,
-                new String[]{LevelContract.LevelEntry._ID},
-                LevelContract.LevelEntry.COLUMN_PATH + " = ?",
-                new String[]{path},
-                null
-        );
-
-        if (levelCursor.moveToFirst()) {
-            // if exits, update row
-
-            int levelIdIndex = levelCursor.getColumnIndex(LevelContract.LevelEntry._ID);
-            levelId = levelCursor.getLong(levelIdIndex);
-            ContentValues updatedValues = new ContentValues();
-            updatedValues.put(LevelContract.LevelEntry.COLUMN_TITLE, title);
-            updatedValues.put(LevelContract.LevelEntry.COLUMN_MD5SUM, md5sum);
-
-            int count = mContext.getContentResolver().update(
-                    LevelContract.LevelEntry.CONTENT_URI, updatedValues,
-                    LevelContract.LevelEntry._ID + " = ?", new String[]{Long.toString(levelId)}
-            );
-            //levelId = ContentUris.parseId(updatedUri);
-
-            Log.v(LOG_TAG, "Updated " + count + " rows");
-            //int levelIdIndex = levelCursor.getColumnIndex(LevelContract.LevelEntry._ID);
-            //levelId = levelCursor.getLong(levelIdIndex);
-        } else {
-            ContentValues levelValues = new ContentValues();
-            levelValues.put(LevelContract.LevelEntry.COLUMN_PATH, path);
-            levelValues.put(LevelContract.LevelEntry.COLUMN_TITLE, title);
-            levelValues.put(LevelContract.LevelEntry.COLUMN_MD5SUM, md5sum);
-
-            // insert data to db
-            Uri insertedUri = mContext.getContentResolver().insert(
-                    LevelContract.LevelEntry.CONTENT_URI,
-                    levelValues
-            );
-            // resulting Uri contains ID for the row. Extract the levelId from the Uri
-            levelId = ContentUris.parseId(insertedUri);
-        }
-        levelCursor.close();
-        return levelId;
-    }
-
-    private void getLevelDataFromJson(String levelJsonStr) throws JSONException {
-
-        // TODO:
-        // change bulk insert to single insert/update in regard to md5sum
-
-        final String OWM_PATH = "path";
-        final String OWM_TITLE = "title";
-        final String OWM_MD5 = "md5";
-
-
-        try {
-            JSONObject levelsJson = new JSONObject(levelJsonStr);
-            //Log.v(LOG_TAG, "JSONObject: " + levelsJson.toString());
-
-            JSONArray levelsArray = levelsJson.getJSONArray("levels");
-            Log.v(LOG_TAG, "JSONArray: " + levelsArray.toString());
-
-            //Vector<ContentValues> cVVector = new Vector<ContentValues>(levelsArray.length());
-
-            int inserted = 0;
-            for (int i = 0; i < levelsArray.length(); i++) {
-
-                JSONObject level = levelsArray.getJSONObject(i);
-
-                String path;
-                String title;
-                String md5sum;
-                path = level.getString(OWM_PATH);
-                title = level.getString(OWM_TITLE);
-                md5sum = level.getString(OWM_MD5);
-
-                long _id = addLevel(path, title, md5sum);
-                if( _id != 0 ) {
-                    inserted++;
+            ArrayList<String> remoteLevels = new ArrayList<String>();
+            for(LevelListJSON.LevelJSON level : levels) {
+                remoteLevels.add(level.base_path);
+            }
+            while (levelCursor.moveToNext()) { // iterate over all local levels in level table
+                //Log.v(LOG_TAG, levelCursor.getBasePath());
+                String base_path = levelCursor.getBasePath();
+                if(!remoteLevels.contains(base_path)) {
+                    // levelCursor points to a row which is not contained in remoteLevels
+                    // so we want to delete this entry in our levels table.
+                    // This deletion cascades down to the files tables
+                    LevelSelection deleteSelection = new LevelSelection();
+                    deleteSelection.id(levelCursor.getId());
+                    int rowsDeleted = deleteSelection.delete(mContext.getContentResolver());
+                    if(rowsDeleted > 0) {
+                        Log.v(LOG_TAG, "Deleted " + Integer.toString(rowsDeleted) + " level rows (" + base_path + ")");
+                    } else {
+                        Log.e(LOG_TAG, "Error! Could not delete obsolete level entry!");
+                    }
                 }
             }
-
-            Log.d(LOG_TAG, "FetchLevelsTask Complete. " + inserted + " inserted");
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, e.getMessage(), e);
-            e.printStackTrace();
         }
+        // update levels
+        for(LevelListJSON.LevelJSON level : levels) {
+            long levelId;
+            { // update or insert into level table
+                LevelContentValues levelData = new LevelContentValues();
+                levelData.putBasePath(level.base_path);
+                levelData.putTitle(level.title);
+                levelData.putDescription(level.description);
+                // try updating entry
+                String selectionClause = LevelColumns.BASE_PATH + " = ?";
+                String[] selectionArgs = {level.base_path};
+                int rowsUpdated = mContext.getContentResolver().update(
+                        LevelColumns.CONTENT_URI,
+                        levelData.values(),
+                        selectionClause,
+                        selectionArgs
+                );
+
+                if (rowsUpdated == 0) { // entry not in table, so insert
+                    Uri uri = levelData.insert(mContext.getContentResolver());
+                    levelId = ContentUris.parseId(uri);
+                } else { // query the levelId for our updated row
+                    LevelSelection levelSelection = new LevelSelection();
+                    levelSelection.basePath(level.base_path);
+                    String[] projection = {LevelColumns._ID};
+                    LevelCursor levelCursor = levelSelection.query(mContext.getContentResolver(), projection);
+                    levelCursor.moveToFirst();
+                    levelId = levelCursor.getId();
+                }
+            }
+            // update or insert level.xml into files table
+            FilesContentValues fileData = new FilesContentValues();
+            fileData.putFilename("level.xml");
+            fileData.putRemoteVersion(level.filemtime);
+            fileData.putLevelId(levelId);
+            String selectionClause = FilesColumns.FILENAME + " = ? " +
+                    " AND " + FilesColumns.PATH + " = ? " +
+                    " AND " + FilesColumns.LEVEL_ID + " = ? ";
+            String[] selectionArgs = {"level.xml", ".", Long.toString(levelId)};
+            int rowsUpdated = mContext.getContentResolver().update(
+                    FilesColumns.CONTENT_URI,
+                    fileData.values(),
+                    selectionClause,
+                    selectionArgs
+            );
+            if (rowsUpdated == 0) { // entry not in table, so insert
+                Uri uri = fileData.insert(mContext.getContentResolver());
+                ContentUris.parseId(uri);
+            }
+        }
+    }
+
+    private LevelListJSON getLevelDataFromJson(String levelJsonStr) {
+        Gson gson = new GsonBuilder().create();
+        LevelListJSON levelList = gson.fromJson(levelJsonStr, LevelListJSON.class);
+        return levelList;
     }
 
     @Override
@@ -142,8 +137,16 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         String levelJsonStr = null;
+
+        final String QUERY_LEVELS = "getlevels";
+        final String SCRIPT = "game.php";
         try {
-            URL url = new URL(mBaseUrl + "game.php");
+            Uri builtUri = Uri.parse(mBaseUrl).buildUpon()
+                    .appendPath(SCRIPT)
+                    .appendQueryParameter(QUERY_LEVELS, "")
+                    .build();
+            URL url = new URL(builtUri.toString());
+
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
@@ -162,14 +165,13 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
             }
             levelJsonStr = buffer.toString();
             Log.v(LOG_TAG, "JSON answer: " + levelJsonStr);
-            getLevelDataFromJson(levelJsonStr);
+            LevelListJSON levelList = getLevelDataFromJson(levelJsonStr);
+            syncLevelData(levelList);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);
             return null;
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Error ", e);
-            e.printStackTrace();
-        } finally {
+        }
+        finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -12,7 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import de.uni_weimar.m18.exkursion.data.LevelContract;
+import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
 
 public class LevelPrepareActivity extends FragmentActivity
         implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -25,29 +26,41 @@ public class LevelPrepareActivity extends FragmentActivity
 
     private static final int LEVEL_LOADER = 0;
 
+    /*
     private static final String[] LEVEL_COLUMNS = {
-            LevelContract.LevelEntry.TABLE_NAME + "." + LevelContract.LevelEntry._ID,
-            LevelContract.LevelEntry.COLUMN_PATH,
-            LevelContract.LevelEntry.COLUMN_TITLE,
-            LevelContract.LevelEntry.COLUMN_MD5SUM
+            LevelContractOLD.LevelEntry.TABLE_NAME + "." + LevelContractOLD.LevelEntry._ID,
+            LevelContractOLD.LevelEntry.COLUMN_PATH,
+            LevelContractOLD.LevelEntry.COLUMN_TITLE,
+            LevelContractOLD.LevelEntry.COLUMN_MD5SUM
     };
 
     private static final int COL_LEVEL_ID = 0;
     private static final int COL_LEVEL_PATH = 1;
     private static final int COL_LEVEL_TITLE = 2;
     private static final int COL_LEVEL_MD5SUM = 3;
-
+    */
+    private DownloadProgressFragment mDownloadProgressFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level_prepare);
         if (savedInstanceState == null) {
-            //getSupportFragmentManager().beginTransaction()
-            //        .add(R.id.container, new LevelPrepareFragment())
-            //        .commit();
+            mDownloadProgressFragment = new DownloadProgressFragment();
+
         }
         //getLoaderManager().initLoader(LEVEL_LOADER, null, this);
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(R.id.container, mDownloadProgressFragment);
+        ft.commit();
+
         getSupportLoaderManager().initLoader(LEVEL_LOADER, null, this);
 
         FragmentManager fm = getSupportFragmentManager();
@@ -57,8 +70,9 @@ public class LevelPrepareActivity extends FragmentActivity
             mDownloadFragment = new DownloadFragment();
             fm.beginTransaction().add(mDownloadFragment, TAG_DOWNLOAD_FRAGMENT).commit();
         }
-
     }
+
+
 
 
     @Override
@@ -99,7 +113,7 @@ public class LevelPrepareActivity extends FragmentActivity
         return new CursorLoader(
                 this,
                 intent.getData(),
-                LEVEL_COLUMNS,
+                /* LEVEL_COLUMNS */ LevelColumns.ALL_COLUMNS,
                 null,
                 null,
                 null
@@ -114,12 +128,16 @@ public class LevelPrepareActivity extends FragmentActivity
             return;
         }
 
-        String path = data.getString(COL_LEVEL_PATH);
-        String title = data.getString(COL_LEVEL_TITLE);
-        String md5sum = data.getString(COL_LEVEL_MD5SUM);
+        //String path = data.getString(COL_LEVEL_PATH);
+        //String title = data.getString(COL_LEVEL_TITLE);
+        //String md5sum = data.getString(COL_LEVEL_MD5SUM);
+        String path = data.getString(data.getColumnIndex(LevelColumns.BASE_PATH));
+        String title = data.getString(data.getColumnIndex(LevelColumns.TITLE));
+        //String md5sum = data.getString(LevelColumns.);
 
-        String LevelInfo = String.format("Path: %s - Title: \"%s\" - MD5 hash: %s", path, title, md5sum);
-        Log.v(LOG_TAG, "got Loader info: " + LevelInfo);
+        //String LevelInfo = String.format("Path: %s - Title: \"%s\" - MD5 hash: %s", path, title, md5sum);
+        //Log.v(LOG_TAG, "got Loader info: " + LevelInfo);
+
         //TextView tv = (TextView)getView().findViewById(R.id.levelInfo_text);
         //tv.setText(mLevelInfo);
 
@@ -143,7 +161,7 @@ public class LevelPrepareActivity extends FragmentActivity
 
     @Override
     public void onProgressUpdate(int percent) {
-
+        mDownloadProgressFragment.setProgress(percent);
     }
 
     @Override
@@ -153,7 +171,6 @@ public class LevelPrepareActivity extends FragmentActivity
 
     @Override
     public void onPostExecute() {
-
     }
 
 }

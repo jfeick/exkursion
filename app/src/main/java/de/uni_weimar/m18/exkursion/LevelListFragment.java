@@ -1,5 +1,6 @@
 package de.uni_weimar.m18.exkursion;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -19,28 +20,25 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import de.uni_weimar.m18.exkursion.data.LevelContract;
+import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class LevelListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String LOG_TAG = LevelListFragment.class.getSimpleName();
 
     private static final int LEVEL_LOADER = 0;
-
+/*
     private static final String[] LEVEL_COLUMNS = {
-            LevelContract.LevelEntry.TABLE_NAME + "." + LevelContract.LevelEntry._ID,
-            LevelContract.LevelEntry.COLUMN_PATH,
-            LevelContract.LevelEntry.COLUMN_TITLE,
-            LevelContract.LevelEntry.COLUMN_MD5SUM
+            LevelContractOLD.LevelEntry.TABLE_NAME + "." + LevelContractOLD.LevelEntry._ID,
+            LevelContractOLD.LevelEntry.COLUMN_PATH,
+            LevelContractOLD.LevelEntry.COLUMN_TITLE,
+            LevelContractOLD.LevelEntry.COLUMN_MD5SUM
     };
     static final int COL_LEVEL_ID       = 0;
     static final int COL_LEVEL_PATH     = 1;
     static final int COL_LEVEL_TITLE    = 2;
     static final int COL_LEVEL_MD5SUM   = 3;
-
+*/
 
     private LevelAdapter mLevelAdapter;
 
@@ -72,8 +70,15 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String sortOrder = LevelContract.LevelEntry.COLUMN_PATH + " ASC";
-        Uri levelUri = LevelContract.LevelEntry.CONTENT_URI;
+
+        /*
+        String sortOrder = LevelContractOLD.LevelEntry.COLUMN_PATH + " ASC";
+        Uri levelUri = LevelContractOLD.LevelEntry.CONTENT_URI;
+        Cursor cur = getActivity().getContentResolver().query(levelUri, null, null, null, sortOrder);
+        mLevelAdapter = new LevelAdapter(getActivity(), cur, 0);
+        */
+        String sortOrder = LevelColumns.BASE_PATH + " ASC";
+        Uri levelUri = LevelColumns.CONTENT_URI;
         Cursor cur = getActivity().getContentResolver().query(levelUri, null, null, null, sortOrder);
         mLevelAdapter = new LevelAdapter(getActivity(), cur, 0);
 
@@ -82,18 +87,24 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
         ListView listView = (ListView) rootView.findViewById(R.id.listview_levels);
         listView.setAdapter(mLevelAdapter);
 
+
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // CursorAdapter returns a cursor at the correct position for getItem()
                 // if it cannot seek to that position
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
-                long idx = cursor.getLong(COL_LEVEL_ID);
+                long idx = cursor.getLong(cursor.getColumnIndex(LevelColumns._ID));
                 Log.v(LOG_TAG, "OnItemClickListener id: " + Long.toString(idx));
-                Log.v(LOG_TAG, "Uri to intent: " + LevelContract.LevelEntry.buildLevelsUri(idx));
+                //Log.v(LOG_TAG, "Uri to intent: " + LevelContractOLD.LevelEntry.buildLevelsUri(idx));
+                Uri uri = ContentUris.withAppendedId(LevelColumns.CONTENT_URI, idx);
+                Log.v(LOG_TAG, "Uri to intent: " + uri);
                 if( cursor != null ) {
                     Intent intent = new Intent(getActivity(), LevelPrepareActivity.class)
-                            .setData(LevelContract.LevelEntry.buildLevelsUri(idx));
+                            .setData(
+                                    uri
+                                    /* LevelContractOLD.LevelEntry.buildLevelsUri(idx) */);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
                 }
@@ -124,8 +135,18 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String sortOrder = LevelContract.LevelEntry.COLUMN_PATH + " ASC";
-        Uri levelUri = LevelContract.LevelEntry.CONTENT_URI;
+        /*
+        String sortOrder = LevelContractOLD.LevelEntry.COLUMN_PATH + " ASC";
+        Uri levelUri = LevelContractOLD.LevelEntry.CONTENT_URI;
+        return new CursorLoader(getActivity(),
+                levelUri,
+                null,
+                null,
+                null,
+                sortOrder);
+        */
+        String sortOrder = LevelColumns.BASE_PATH + " ASC";
+        Uri levelUri = LevelColumns.CONTENT_URI;
         return new CursorLoader(getActivity(),
                 levelUri,
                 null,
