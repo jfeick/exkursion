@@ -118,6 +118,7 @@ public class FetchLevelListTask extends AsyncTask<Void, Void, Void> {
                     levelId = levelCursor.getId();
                 }
             }
+            /*
             // update or insert level.xml into files table
             FilesContentValues fileData = new FilesContentValues();
             fileData.putFilename("level.xml");
@@ -137,6 +138,7 @@ public class FetchLevelListTask extends AsyncTask<Void, Void, Void> {
                 Uri uri = fileData.insert(mContext.getContentResolver());
                 ContentUris.parseId(uri);
             }
+            */
         }
     }
 
