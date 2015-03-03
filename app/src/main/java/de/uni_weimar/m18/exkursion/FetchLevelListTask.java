@@ -26,8 +26,6 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import org.json.JSONException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,15 +42,15 @@ import de.uni_weimar.m18.exkursion.data.level.LevelContentValues;
 import de.uni_weimar.m18.exkursion.data.level.LevelCursor;
 import de.uni_weimar.m18.exkursion.data.level.LevelSelection;
 
-public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
+public class FetchLevelListTask extends AsyncTask<Void, Void, Void> {
 
-    private final String LOG_TAG = FetchLevelsTask.class.getSimpleName();
+    private final String LOG_TAG = FetchLevelListTask.class.getSimpleName();
 
     private final Context mContext;
 
     private String mBaseUrl;
 
-    public FetchLevelsTask(Context context, String baseUrl) {
+    public FetchLevelListTask(Context context, String baseUrl) {
         mContext = context;
         mBaseUrl = baseUrl;
     }
@@ -63,7 +61,6 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
         LevelListJSON.LevelJSON[] levels = levelList.getLevels();
 
         // query every existing levels first and delete entries which are not in levelList
-        // TODO complete deletion routine
         {
             LevelSelection levelSelection = new LevelSelection();
             String[] projection = {LevelColumns._ID, LevelColumns.BASE_PATH};
@@ -143,7 +140,7 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
         }
     }
 
-    private LevelListJSON getLevelDataFromJson(String levelJsonStr) {
+    private LevelListJSON getLevelListDataFromJson(String levelJsonStr) {
         Gson gson = new GsonBuilder().create();
         LevelListJSON levelList = gson.fromJson(levelJsonStr, LevelListJSON.class);
         return levelList;
@@ -182,7 +179,7 @@ public class FetchLevelsTask extends AsyncTask<Void, Void, Void> {
             }
             levelJsonStr = buffer.toString();
             Log.v(LOG_TAG, "JSON answer: " + levelJsonStr);
-            LevelListJSON levelList = getLevelDataFromJson(levelJsonStr);
+            LevelListJSON levelList = getLevelListDataFromJson(levelJsonStr);
             syncLevelData(levelList);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error ", e);

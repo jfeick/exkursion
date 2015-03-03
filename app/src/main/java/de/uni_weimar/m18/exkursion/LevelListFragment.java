@@ -138,7 +138,7 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     private void updateLevels() {
-        FetchLevelsTask levelsTask = new FetchLevelsTask(
+        FetchLevelListTask levelsTask = new FetchLevelListTask(
                 getActivity(), getString(R.string.GAME_BASE_URL));
         levelsTask.execute();
     }

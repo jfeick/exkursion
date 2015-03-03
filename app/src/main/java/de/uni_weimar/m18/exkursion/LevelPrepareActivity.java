@@ -42,19 +42,8 @@ public class LevelPrepareActivity extends FragmentActivity
 
     private static final int LEVEL_LOADER = 0;
 
-    /*
-    private static final String[] LEVEL_COLUMNS = {
-            LevelContractOLD.LevelEntry.TABLE_NAME + "." + LevelContractOLD.LevelEntry._ID,
-            LevelContractOLD.LevelEntry.COLUMN_PATH,
-            LevelContractOLD.LevelEntry.COLUMN_TITLE,
-            LevelContractOLD.LevelEntry.COLUMN_MD5SUM
-    };
+    Cursor mCursor;
 
-    private static final int COL_LEVEL_ID = 0;
-    private static final int COL_LEVEL_PATH = 1;
-    private static final int COL_LEVEL_TITLE = 2;
-    private static final int COL_LEVEL_MD5SUM = 3;
-    */
     private DownloadProgressFragment mDownloadProgressFragment;
 
     @Override
@@ -88,8 +77,11 @@ public class LevelPrepareActivity extends FragmentActivity
         }
     }
 
-
-
+    @Override
+    protected void onDestroy() {
+        mCursor.close();
+        super.onDestroy();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -140,34 +132,26 @@ public class LevelPrepareActivity extends FragmentActivity
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.v(LOG_TAG, "In onLoadFinished");
         Log.v(LOG_TAG, "cursor count: " + Integer.toString(data.getCount()));
+
+        mCursor = data;
+
         if(!data.moveToFirst()) {
+
+            // TODO error handling if cursor doesn't match any data row
             return;
         }
 
-        //String path = data.getString(COL_LEVEL_PATH);
-        //String title = data.getString(COL_LEVEL_TITLE);
-        //String md5sum = data.getString(COL_LEVEL_MD5SUM);
         String path = data.getString(data.getColumnIndex(LevelColumns.BASE_PATH));
         String title = data.getString(data.getColumnIndex(LevelColumns.TITLE));
-        //String md5sum = data.getString(LevelColumns.);
 
-        //String LevelInfo = String.format("Path: %s - Title: \"%s\" - MD5 hash: %s", path, title, md5sum);
-        //Log.v(LOG_TAG, "got Loader info: " + LevelInfo);
-
-        //TextView tv = (TextView)getView().findViewById(R.id.levelInfo_text);
-        //tv.setText(mLevelInfo);
-
-        // TODO:
-        // check for md5 hash difference and only download resources we need
-        //Toast.makeText(getActivity().getApplicationContext(),
-        //        "Downloading Level Data", Toast.LENGTH_SHORT).show();
-        //new DownloadResourcesTask().execute(path);
-        mDownloadFragment.startDownload(path);
+        // we finished loading the cursor (referencing a level row)
+        // start our download
+        mDownloadFragment.startFetchLevelDataTask(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        //mCursor = null;
     }
 
     @Override
@@ -187,6 +171,7 @@ public class LevelPrepareActivity extends FragmentActivity
 
     @Override
     public void onPostExecute() {
+        mCursor.close();
     }
 
 }
