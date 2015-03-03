@@ -17,11 +17,16 @@
 package de.uni_weimar.m18.exkursion;
 
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import java.io.File;
 
 
 /**
@@ -35,7 +40,7 @@ public class ImageFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
+    private String mSrc;
 
 
     /**
@@ -47,11 +52,11 @@ public class ImageFragment extends Fragment {
      * @return A new instance of fragment ImageFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ImageFragment newInstance() {
+    public static ImageFragment newInstance(String src) {
         ImageFragment fragment = new ImageFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_PARAM1, param1);
-        //fragment.setArguments(args);
+        args.putString(ARG_PARAM1, src);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -63,7 +68,7 @@ public class ImageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
+            mSrc = getArguments().getString(ARG_PARAM1);
         }
     }
 
@@ -72,6 +77,13 @@ public class ImageFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_image, container, false);
+
+        File srcFile = new File(getActivity().getExternalFilesDir(null) + "/" + mSrc);
+        if(srcFile.exists()) {
+            Bitmap bitmap = BitmapFactory.decodeFile(srcFile.getAbsolutePath());
+            ImageView iv = (ImageView) rootView.findViewById(R.id.imageView);
+            iv.setImageBitmap(bitmap);
+        }
 
         return rootView;
     }

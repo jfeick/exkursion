@@ -29,6 +29,21 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.logging.Level;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import de.uni_weimar.m18.exkursion.data.files.FilesSelection;
 import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
 
 public class LevelPrepareActivity extends FragmentActivity
@@ -141,8 +156,9 @@ public class LevelPrepareActivity extends FragmentActivity
             return;
         }
 
-        String path = data.getString(data.getColumnIndex(LevelColumns.BASE_PATH));
-        String title = data.getString(data.getColumnIndex(LevelColumns.TITLE));
+
+        //mBasePath = data.getString(data.getColumnIndex(LevelColumns.BASE_PATH));
+
 
         // we finished loading the cursor (referencing a level row)
         // start our download
@@ -171,7 +187,62 @@ public class LevelPrepareActivity extends FragmentActivity
 
     @Override
     public void onPostExecute() {
+
+        // TODO Move to another AsyncTask?
+        // The parsing of the level.xml file runs on the UI thread now (because this is the
+        // onPostExecute callback
+        try {
+            parseLevelXML();
+        } catch (IOException e) {
+            Log.e(LOG_TAG, "Error - IOException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (SAXException e) {
+            Log.e(LOG_TAG, "Error - SAXException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (ParserConfigurationException e) {
+            Log.e(LOG_TAG, "Error - ParserConfigurationException: " + e.getMessage());
+            e.printStackTrace();
+        }
+        // when we are done, close the cursor (Important!)
         mCursor.close();
+
+        LevelStateManager stateManager =
+                ((MainApplication)getApplicationContext()).getStateManager();
+        if (stateManager.getLevelXML() != null) {
+            Intent intent = new Intent(this, LevelActivity.class);
+            //intent.putExtra("level_path", "level0test");
+            startActivity(intent);
+        } else {
+            // TODO show error message? do something!
+        }
+    }
+
+    private void parseLevelXML() throws IOException, SAXException, ParserConfigurationException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        long levelId = mCursor.getLong(mCursor.getColumnIndex(LevelColumns._ID));
+        String basePath = mCursor.getString(mCursor.getColumnIndex(LevelColumns.BASE_PATH));
+        String levelFilename = "level.xml";
+        File levelXmlFile = new File(getExternalFilesDir(null)
+                + "/" + basePath + "/" + levelFilename);
+        if(!levelXmlFile.exists()) {
+            return;
+        }
+        FileInputStream fstream = null;
+        try{
+            fstream = new FileInputStream(levelXmlFile);
+            Document xmlDocument = documentBuilder.parse(new InputSource(fstream));
+            LevelStateManager stateManager =
+                    ((MainApplication)getApplicationContext()).getStateManager();
+            stateManager.setLevelXML(xmlDocument);
+            stateManager.setBasePath(basePath);
+        } catch (FileNotFoundException e) {
+            Log.e(LOG_TAG, "Error! FileNotFoundException: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Error! Could not parse level.xml file!");
+            e.printStackTrace();
+        }
     }
 
 }

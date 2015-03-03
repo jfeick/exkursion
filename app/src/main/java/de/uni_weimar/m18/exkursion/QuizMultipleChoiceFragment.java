@@ -17,6 +17,7 @@
 package de.uni_weimar.m18.exkursion;
 
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -49,6 +50,11 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
     private String mButton4Text;
     private int mCorrectAnswer;
 
+    private OnFragmentInteractionListener mListener;
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        public void correctAnswerAction();
+    }
 
     public static QuizMultipleChoiceFragment newInstance(String button1text, String button2text,
                                                          String button3text, String button4text,
@@ -90,6 +96,9 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
         }
         if(v.getId() == correctButton.getId()) {
             Toast.makeText(getActivity(), "RRRRRRRICHTIG!", Toast.LENGTH_SHORT).show();
+            if(mListener != null) {
+                mListener.correctAnswerAction();
+            }
         } else {
             Toast.makeText(getActivity(), "BZZZZZZZZZTTTT... falsch!", Toast.LENGTH_SHORT).show();
         }
@@ -128,6 +137,23 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
         button4.setOnClickListener(this);
 
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            mListener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
 

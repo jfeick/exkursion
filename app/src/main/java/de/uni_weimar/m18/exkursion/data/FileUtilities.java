@@ -21,6 +21,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.io.IOException;
 
 public class FileUtilities {
 
@@ -43,9 +44,10 @@ public class FileUtilities {
         return false;
     }
 
-    static public boolean fileExistsInStorage(Context context, String base_path, String path, String filename) {
+    static public boolean fileExistsInStorage(Context context, String base_path, String filepath, String filename) {
         File file = new File(context.getExternalFilesDir(null)
-                + "/" + base_path + "/" + path + "/" + filename);
+                + "/" + base_path + "/" + filepath + "/" + filename);
+
         //Log.v(LOG_TAG, "File location: " + file.getAbsolutePath());
         if(file != null) {
             return file.exists();
@@ -54,4 +56,19 @@ public class FileUtilities {
     }
 
 
+    public static long getFileSize(Context context, String base_path, String filepath, String filename) {
+        try {
+            File file = new File(context.getExternalFilesDir(null)
+                    + "/" + base_path + "/" + filepath + "/" + filename);
+            file = new File(file.getCanonicalPath());
+            if (file.exists()) {
+                return file.length();
+            }
+        }
+        catch (IOException e) {
+            Log.e(LOG_TAG, "Error! IOException: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

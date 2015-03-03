@@ -173,7 +173,10 @@ class FetchLevelDataTask extends AsyncTask<Void, Integer, Void> {
                     &&
                     (filesCursor.getLocalVersion() < file.filemtime     // File is outdated
                             || !FileUtilities.fileExistsInStorage(mDownloadFragment.getActivity(),
-                            base_path, file.filepath, file.filename))   // File does not exist in FS
+                                            base_path, file.filepath, file.filename))   // File does not exist in FS
+                            || FileUtilities.getFileSize(mDownloadFragment.getActivity(),
+                                            base_path, file.filepath, file.filename)
+                                                        != file.filesize // Filesize differs
                     ) {
                 fileList_for_download.add(file);
                 downloadSize += file.filesize;

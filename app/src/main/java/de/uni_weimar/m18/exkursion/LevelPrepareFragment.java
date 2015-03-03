@@ -42,9 +42,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.logging.Level;
 
 import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
+
+
+// TODO IMPORTANT! This Fragment is obsolete now!
 
 /**
  * A placeholder fragment containing a simple view.
@@ -270,7 +272,7 @@ public class LevelPrepareFragment extends Fragment
             prgDialog.dismiss();
             Toast.makeText(getActivity().getApplicationContext(), "Download complete, starting level", Toast.LENGTH_SHORT).show();
             // Start Level
-            Intent intent = new Intent(getActivity(), LevelActivity.class);
+            Intent intent = new Intent(getActivity(), LevelActivityOld.class);
             Log.v(LOG_TAG, "Stuffing extra into intent: " + mPath);
             intent.putExtra("level_path", mPath);
             startActivity(intent);
