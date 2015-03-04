@@ -59,21 +59,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="de.uni_weimar.m18.exkursion.MainActivity" />
         </activity>
-        <activity
-            android:name=".QuizMultipleChoice"
-            android:label="@string/title_activity_quiz_multiple_choice" >
-        </activity>
 
 
-
-        <activity
-            android:name=".LevelActivityOld"
-            android:label="@string/title_activity_level"
-            android:parentActivityName=".MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="de.uni_weimar.m18.exkursion.MainActivity" />
-        </activity>
     </application>
 
 </manifest>

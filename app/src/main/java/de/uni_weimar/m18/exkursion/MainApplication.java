@@ -2,7 +2,7 @@ package de.uni_weimar.m18.exkursion;
 
 import android.app.Application;
 
-import de.uni_weimar.m18.exkursion.LevelStateManager;
+import de.uni_weimar.m18.exkursion.util.LevelStateManager;
 
 /*
  * Copyright 2015. J.F.Eick

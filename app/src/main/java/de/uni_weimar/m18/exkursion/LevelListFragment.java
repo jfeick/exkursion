@@ -56,7 +56,7 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
     static final int COL_LEVEL_MD5SUM   = 3;
 */
 
-    private LevelAdapter mLevelAdapter;
+    private LevelListAdapter mLevelAdapter;
 
     public LevelListFragment() {
     }
@@ -96,7 +96,7 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
         String sortOrder = LevelColumns.BASE_PATH + " ASC";
         Uri levelUri = LevelColumns.CONTENT_URI;
         Cursor cur = getActivity().getContentResolver().query(levelUri, null, null, null, sortOrder);
-        mLevelAdapter = new LevelAdapter(getActivity(), cur, 0);
+        mLevelAdapter = new LevelListAdapter(getActivity(), cur, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 

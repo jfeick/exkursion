@@ -24,11 +24,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import de.uni_weimar.m18.exkursion.element.QuizMultipleChoiceFragment;
+import de.uni_weimar.m18.exkursion.util.LevelStateManager;
+
 public class LevelActivity extends FragmentActivity
-        implements TestLevelFragment.OnFragmentInteractionListener,
+        implements LevelPageFragment.OnFragmentInteractionListener,
                    QuizMultipleChoiceFragment.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();

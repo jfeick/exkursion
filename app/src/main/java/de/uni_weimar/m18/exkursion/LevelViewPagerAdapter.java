@@ -20,9 +20,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-
 import java.util.ArrayList;
 
 class LevelViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -39,9 +36,9 @@ class LevelViewPagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        ArrayList<TestLevelFragment> fragments = new ArrayList<>();
+        ArrayList<LevelPageFragment> fragments = new ArrayList<>();
         for(int k = 0; k < mCount; ++k) {
-            fragments.add(TestLevelFragment.newInstance("test" + Integer.toString(k), k, mBasePath));
+            fragments.add(LevelPageFragment.newInstance("test" + Integer.toString(k), k, mBasePath));
         }
         return fragments.get(i);
 

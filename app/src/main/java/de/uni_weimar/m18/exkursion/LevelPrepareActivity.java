@@ -37,20 +37,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.logging.Level;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import de.uni_weimar.m18.exkursion.data.files.FilesSelection;
 import de.uni_weimar.m18.exkursion.data.level.LevelColumns;
+import de.uni_weimar.m18.exkursion.util.LevelStateManager;
 
 public class LevelPrepareActivity extends FragmentActivity
         implements LoaderManager.LoaderCallbacks<Cursor>,
         DownloadFragment.TaskCallbacks {
 
-    private static final String LOG_TAG = LevelPrepareFragment.class.getSimpleName();
+    private static final String LOG_TAG = LevelPrepareActivity.class.getSimpleName();
 
     private static final String TAG_DOWNLOAD_FRAGMENT = "download_fragment";
     private DownloadFragment mDownloadFragment;

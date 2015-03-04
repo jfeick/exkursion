@@ -39,7 +39,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import de.uni_weimar.m18.exkursion.data.FileListJSON;
-import de.uni_weimar.m18.exkursion.data.FileUtilities;
+import de.uni_weimar.m18.exkursion.util.FileUtilities;
 import de.uni_weimar.m18.exkursion.data.files.FilesColumns;
 import de.uni_weimar.m18.exkursion.data.files.FilesContentValues;
 import de.uni_weimar.m18.exkursion.data.files.FilesCursor;
