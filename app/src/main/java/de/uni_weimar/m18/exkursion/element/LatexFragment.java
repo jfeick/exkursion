@@ -87,6 +87,7 @@ public class LatexFragment extends Fragment {
 
         latexView.loadDataWithBaseURL("http://bar", "<script type='text/x-mathjax-config'>"
                 +"MathJax.Hub.Config({ "
+                +"messageStyle: 'none',"
                 +"showMathMenu: false, "
                 +"jax: ['input/TeX','output/HTML-CSS'], "
                 +"extensions: ['tex2jax.js'], "
