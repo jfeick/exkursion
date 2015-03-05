@@ -1,0 +1,67 @@
+<!--
+  ~ Copyright 2015. J.F.Eick
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~   limitations under the License.
+  -->
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context="de.uni_weimar.m18.exkursion.element.SliderFragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+<!--
+        <Space
+            android:id="@+id/balloonSpace"
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
+-->
+
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/indicatorBalloon"
+            android:visibility="invisible"
+            android:layout_above="@+id/seekBar">
+            <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/seekbar_text_bg"
+                android:textColor="@color/primary_material_light"
+                android:textSize="@dimen/abc_text_size_button_material"
+                android:id="@+id/indicatorTextView"/>
+            <RelativeLayout
+                android:id="@+id/indicatorTriangle"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:background="@drawable/triangle"
+                android:rotation="180"
+                android:layout_below="@+id/indicatorTextView"
+                android:layout_centerInParent="true"
+                />
+        </RelativeLayout>
+
+        <Space
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:id="@+id/balloonSpace" />
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:thumb="@drawable/thumb"
+            android:progressDrawable="@drawable/seek_progress"
+            android:layout_below="@+id/balloonSpace" />
+
+    </RelativeLayout>
+

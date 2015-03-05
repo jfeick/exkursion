@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import de.uni_weimar.m18.exkursion.element.ImageFragment;
 import de.uni_weimar.m18.exkursion.element.LatexFragment;
 import de.uni_weimar.m18.exkursion.element.QuizMultipleChoiceFragment;
+import de.uni_weimar.m18.exkursion.element.SliderFragment;
 import de.uni_weimar.m18.exkursion.element.TextFragment;
 import de.uni_weimar.m18.exkursion.util.LevelStateManager;
 
@@ -134,16 +135,6 @@ public class LevelPageFragment extends Fragment
         ft.commit();
     }
 
-    void removeChildFragments() {
-        FragmentTransaction ft = getChildFragmentManager().beginTransaction();
-        for (Fragment fragment : mChildFragments) {
-            ft.remove(fragment);
-            mChildFragments.remove(fragment);
-        }
-        ft.commitAllowingStateLoss();
-        //mChildFragments.clear();
-    }
-
     void addText(String value) {
         TextFragment textFragment = TextFragment.newInstance(value);
         mChildFragments.add(textFragment);
@@ -164,6 +155,11 @@ public class LevelPageFragment extends Fragment
     private void addLatex(String latexCode) {
         LatexFragment latexFragment = LatexFragment.newInstance(latexCode);
         mChildFragments.add(latexFragment);
+    }
+
+    private void addSlider(int min, int max, String suffix) {
+        SliderFragment sliderFragment = SliderFragment.newInstance(min, max, suffix);
+        mChildFragments.add(sliderFragment);
     }
 
     private void populateLayoutFromXML() {
@@ -204,12 +200,20 @@ public class LevelPageFragment extends Fragment
                 if(item.getNodeName().equals("latex")) {
                     addLatex(item.getTextContent());
                 }
+                if(item.getNodeName().equals("slider")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node min = attributes.getNamedItem("min");
+                    Node max = attributes.getNamedItem("max");
+                    Node suffix = attributes.getNamedItem("suffix");
+                    addSlider(Integer.parseInt(min.getNodeValue()),
+                            Integer.parseInt(max.getNodeValue()),
+                            suffix.getNodeValue());
+                }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
             e.printStackTrace();
         }
-
         commitChildFragments();
     }
 

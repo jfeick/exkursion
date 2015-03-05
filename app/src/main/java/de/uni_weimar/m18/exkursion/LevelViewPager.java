@@ -43,6 +43,7 @@ public class LevelViewPager extends ViewPager {
     }
 
     public boolean arrowScroll(int direction) {
+        // We disable scrolling through the viewpager on Devices which have arrow buttons
         //return super.arrowScroll(direction);
         return false;
     }
