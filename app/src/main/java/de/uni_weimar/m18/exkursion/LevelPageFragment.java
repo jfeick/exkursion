@@ -56,6 +56,7 @@ public class LevelPageFragment extends Fragment
     private String mText;
     private int mPageNum;
     private String mBasePath;
+    private boolean mIsCreated = false;
 
     private ArrayList<Fragment> mChildFragments = new ArrayList<>();
 
@@ -94,10 +95,30 @@ public class LevelPageFragment extends Fragment
         TextView tv = (TextView)view.findViewById(R.id.text_header);
         tv.setText(mText);
 
-        populateLayoutFromXML();
+        if(savedInstanceState != null) {
+            mText = getArguments().getString(ARG_PARAM1);
+            mPageNum = getArguments().getInt(ARG_PARAM2);
+            mBasePath = getArguments().getString(ARG_PARAM3);
+        } else {
+            populateLayoutFromXML();
+        }
 
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(ARG_PARAM1, mText);
+        outState.putInt(ARG_PARAM2, mPageNum);
+        outState.putString(ARG_PARAM3, mBasePath);
+        outState.putBoolean("recreated", mIsCreated);
     }
 
     @Override
