@@ -48,7 +48,7 @@ public class LevelActivity extends FragmentActivity
         mBasePath = stateManager.getBasePath();
         try {
             NodeList pageList = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page");
-            viewPager.setAdapter(new LevelViewPagerAdapter(fragmentManager, pageList.getLength(), mBasePath));
+            viewPager.setAdapter(new LevelViewPagerAdapter(fragmentManager, mBasePath));
         } catch (Exception e) {
             // TODO c'mon, at least try to care
         }
@@ -91,7 +91,17 @@ public class LevelActivity extends FragmentActivity
     }
 
     @Override
-    public void correctAnswerAction() {
-        switchToNextPage();
+    public void switchToTarget(String pageId) {
+        LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
+        int id = adapter.getItemById(pageId);
+        viewPager.setCurrentItem(id);
+    }
+
+    @Override
+    public void correctAnswerAction(String pageId) {
+        //LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
+        //adapter.addPage(pageId);
+        //switchToNextPage();
+        switchToTarget(pageId);
     }
 }

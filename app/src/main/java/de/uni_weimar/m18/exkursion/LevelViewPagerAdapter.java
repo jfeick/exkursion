@@ -21,31 +21,45 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 class LevelViewPagerAdapter extends FragmentStatePagerAdapter {
 
-    Fragment fragment = null;
-    int mCount = 0;
-    String mBasePath = null;
+    private Fragment fragment = null;
+    private String mBasePath = null;
+    private List<Fragment> mPages;
 
-    public LevelViewPagerAdapter(FragmentManager fm, int count, String basePath) {
+
+
+    public LevelViewPagerAdapter(FragmentManager fm, String basePath) {
         super(fm);
-        this.mCount = count;
         this.mBasePath = basePath;
+        this.mPages = new ArrayList<Fragment>();
+        this.mPages.add(LevelPageFragment.newInstance("start", mBasePath));
+    }
+
+    public void addPage(String pageId) {
+        mPages.add(LevelPageFragment.newInstance(pageId, mBasePath));
+        super.notifyDataSetChanged();
+    }
+
+    public int getItemById(String pageId) {
+        int position = mPages.indexOf(pageId);
+        if (position < 0) {
+            addPage(pageId);
+            return mPages.size() - 1; // return last item (added Page)
+        } else {
+            return position;
+        }
     }
 
     @Override
-    public Fragment getItem(int i) {
-        ArrayList<LevelPageFragment> fragments = new ArrayList<>();
-        for(int k = 0; k < mCount; ++k) {
-            fragments.add(LevelPageFragment.newInstance("test" + Integer.toString(k), k, mBasePath));
-        }
-        return fragments.get(i);
-
+    public Fragment getItem(int position) {
+        return mPages.get(position);
     }
 
     @Override
     public int getCount() {
-        return mCount;
+        return mPages.size();
     }
 }

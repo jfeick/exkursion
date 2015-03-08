@@ -31,7 +31,7 @@ public class LevelViewPager extends ViewPager {
     }
 
     // TODO make sliding available for debugging purposes
-
+    /*
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         return false;
@@ -41,7 +41,7 @@ public class LevelViewPager extends ViewPager {
     public boolean onTouchEvent(MotionEvent event) {
         return false;
     }
-
+    */
     public boolean arrowScroll(int direction) {
         // We disable scrolling through the viewpager on Devices which have arrow buttons
         //return super.arrowScroll(direction);

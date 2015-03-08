@@ -44,6 +44,7 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
     private static final String ARG_PARAM3 = "button3text";
     private static final String ARG_PARAM4 = "button4text";
     private static final String ARG_PARAM5 = "correctAnswer";
+    private static final String ARG_PARAM6 = "correctTargetId";
 
     // TODO: Rename and change types of parameters
     private String mButton1Text;
@@ -51,16 +52,17 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
     private String mButton3Text;
     private String mButton4Text;
     private int mCorrectAnswer;
+    private String mCorrectTargetId;
 
     private OnFragmentInteractionListener mListener;
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void correctAnswerAction();
+        public void correctAnswerAction(String pageId);
     }
 
     public static QuizMultipleChoiceFragment newInstance(String button1text, String button2text,
                                                          String button3text, String button4text,
-                                                         int correctAnswer) {
+                                                         int correctAnswer, String correctTargetId) {
         QuizMultipleChoiceFragment fragment = new QuizMultipleChoiceFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, button1text);
@@ -68,6 +70,7 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
         args.putString(ARG_PARAM3, button3text);
         args.putString(ARG_PARAM4, button4text);
         args.putInt(ARG_PARAM5, correctAnswer);
+        args.putString(ARG_PARAM6, correctTargetId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -99,7 +102,7 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
         if(v.getId() == correctButton.getId()) {
             Toast.makeText(getActivity(), "RRRRRRRICHTIG!", Toast.LENGTH_SHORT).show();
             if(mListener != null) {
-                mListener.correctAnswerAction();
+                mListener.correctAnswerAction(mCorrectTargetId);
             }
         } else {
             Toast.makeText(getActivity(), "BZZZZZZZZZTTTT... falsch!", Toast.LENGTH_SHORT).show();
@@ -115,6 +118,7 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
             mButton3Text = getArguments().getString(ARG_PARAM3);
             mButton4Text = getArguments().getString(ARG_PARAM4);
             mCorrectAnswer = getArguments().getInt(ARG_PARAM5);
+            mCorrectTargetId = getArguments().getString(ARG_PARAM6);
         }
     }
 

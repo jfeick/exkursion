@@ -50,12 +50,10 @@ public class LevelPageFragment extends Fragment
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    private static final String ARG_PARAM3 = "param3";
 
 
     // TODO: Rename and change types of parameters
-    private String mText;
-    private int mPageNum;
+    private String mPageId;
     private String mBasePath;
     private boolean mIsCreated = false;
 
@@ -63,12 +61,11 @@ public class LevelPageFragment extends Fragment
 
     private OnFragmentInteractionListener mListener;
 
-    public static LevelPageFragment newInstance(String text, int pageNum, String basePath) {
+    public static LevelPageFragment newInstance(String pageId, String basePath) {
         LevelPageFragment fragment = new LevelPageFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, text);
-        args.putInt(ARG_PARAM2, pageNum);
-        args.putString(ARG_PARAM3, basePath);
+        args.putString(ARG_PARAM1, pageId);
+        args.putString(ARG_PARAM2, basePath);
         fragment.setArguments(args);
         return fragment;
     }
@@ -81,9 +78,8 @@ public class LevelPageFragment extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mText = getArguments().getString(ARG_PARAM1);
-            mPageNum = getArguments().getInt(ARG_PARAM2);
-            mBasePath = getArguments().getString(ARG_PARAM3);
+            mPageId = getArguments().getString(ARG_PARAM1);
+            mBasePath = getArguments().getString(ARG_PARAM2);
         }
     }
 
@@ -94,12 +90,11 @@ public class LevelPageFragment extends Fragment
         View view = inflater.inflate(R.layout.fragment_level_page, container, false);
 
         TextView tv = (TextView)view.findViewById(R.id.text_header);
-        tv.setText(mText);
+        tv.setText(mPageId);
 
         if(savedInstanceState != null) {
-            mText = getArguments().getString(ARG_PARAM1);
-            mPageNum = getArguments().getInt(ARG_PARAM2);
-            mBasePath = getArguments().getString(ARG_PARAM3);
+            mPageId = getArguments().getString(ARG_PARAM1);
+            mBasePath = getArguments().getString(ARG_PARAM2);
         } else {
             populateLayoutFromXML();
         }
@@ -116,9 +111,8 @@ public class LevelPageFragment extends Fragment
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(ARG_PARAM1, mText);
-        outState.putInt(ARG_PARAM2, mPageNum);
-        outState.putString(ARG_PARAM3, mBasePath);
+        outState.putString(ARG_PARAM1, mPageId);
+        outState.putString(ARG_PARAM2, mBasePath);
         outState.putBoolean("recreated", mIsCreated);
     }
 
@@ -146,9 +140,10 @@ public class LevelPageFragment extends Fragment
     }
 
     void addQuizMultipleChoice(String button1text, String button2text, String button3text,
-                               String button4text, int correctAnswer) {
+                               String button4text, int correctAnswer, String correctTargetId) {
         QuizMultipleChoiceFragment quizFragment = QuizMultipleChoiceFragment.newInstance(
-                button1text, button2text, button3text, button4text, correctAnswer);
+                button1text, button2text, button3text, button4text, correctAnswer,
+                correctTargetId);
         mChildFragments.add(quizFragment);
     }
 
@@ -170,7 +165,17 @@ public class LevelPageFragment extends Fragment
             Element rootElement = levelXml.getDocumentElement();
             Log.v(LOG_TAG, "RootElement: " + rootElement.getTagName());
             NodeList pageList = rootElement.getElementsByTagName("page");
-            Node page = pageList.item(mPageNum);
+            Node page = null; // = pageList.item(mPageNum);
+            for(int i = 0; i < pageList.getLength(); ++i) {
+                if(pageList.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(mPageId)) {
+                    page = pageList.item(i);
+                }
+            }
+            if(page == null) {
+                Log.e(LOG_TAG, "Error! Page with id " + mPageId + " could not be found in level.xml!");
+                return;
+            }
+
             Log.v(LOG_TAG, "page: nodename: " + page.getNodeName());
             NodeList childNodes = page.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); ++i) {
@@ -192,10 +197,12 @@ public class LevelPageFragment extends Fragment
                     Node button3 = attributes.getNamedItem("button3");
                     Node button4 = attributes.getNamedItem("button4");
                     Node correctAnswer = attributes.getNamedItem("correctAnswer");
+                    Node correctTarget = attributes.getNamedItem("correctTarget");
 
                     addQuizMultipleChoice(button1.getNodeValue(), button2.getNodeValue(),
                             button3.getNodeValue(), button4.getNodeValue(),
-                            Integer.parseInt(correctAnswer.getNodeValue()));
+                            Integer.parseInt(correctAnswer.getNodeValue()),
+                            correctTarget.getNodeValue());
                 }
                 if(item.getNodeName().equals("latex")) {
                     addLatex(item.getTextContent());
@@ -250,6 +257,7 @@ public class LevelPageFragment extends Fragment
         // TODO: Update argument type and name
         public void switchToNextPage();
         public void switchToTarget(int pageNum);
+        public void switchToTarget(String id);
     }
 
 }

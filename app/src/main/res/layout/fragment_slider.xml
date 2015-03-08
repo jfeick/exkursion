@@ -33,7 +33,8 @@
             android:id="@+id/indicatorBalloon"
             android:visibility="invisible"
             android:layout_above="@+id/seekBar">
-            <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
+            <TextView android:text="0"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/seekbar_text_bg"
                 android:textColor="@color/primary_material_light"
