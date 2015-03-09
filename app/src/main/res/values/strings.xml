@@ -17,9 +17,11 @@
 
 <resources>
 
+    <string name="app_name">Anatomie der Stadt</string>
+
     <string name="GAME_BASE_URL">http://m18.uni-weimar.de/exkursion/</string>
 
-    <string name="app_name">Exkursion</string>
+
     <string name="hello_world">Placeholder (LEVEL)</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
