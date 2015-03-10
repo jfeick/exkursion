@@ -24,10 +24,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.gms.location.LocationListener;
-
 import org.w3c.dom.NodeList;
 
+import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
@@ -35,7 +34,8 @@ import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 public class LevelActivity extends FragmentActivity
         implements LevelPageFragment.OnFragmentInteractionListener,
                    QuizMultipleChoiceFragment.OnFragmentInteractionListener,
-                   LocationFragment.OnFragmentInteractionListener {
+                   LocationFragment.OnFragmentInteractionListener,
+                   ButtonFragment.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     ViewPager viewPager = null;
@@ -100,6 +100,7 @@ public class LevelActivity extends FragmentActivity
 
     @Override
     public void switchToTarget(String pageId) {
+        Log.v(LOG_TAG, "page switch triggered");
         LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
         int id = adapter.getItemById(pageId);
         viewPager.setCurrentItem(id);
@@ -117,4 +118,10 @@ public class LevelActivity extends FragmentActivity
     public void inProximityAction(String pageId) {
         switchToTarget(pageId);
     }
+
+    @Override
+    public void buttonAction(String pageId) {
+        switchToTarget(pageId);
+    }
+
 }

@@ -34,6 +34,7 @@ import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
 
+import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LatexFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
@@ -173,6 +174,12 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(locationFragment);
     }
 
+    private void addButton(String caption, String targetId) {
+        ButtonFragment buttonFragment =
+                ButtonFragment.newInstance(caption, targetId);
+        mChildFragments.add(buttonFragment);
+    }
+
     private void populateLayoutFromXML() {
         try {
             LevelStateManager stateManager =
@@ -239,6 +246,12 @@ public class LevelPageFragment extends Fragment
                     Node target = attributes.getNamedItem("target");
                     addLocation(latitude.getNodeValue(), longitude.getNodeValue(),
                             target.getNodeValue());
+                }
+                if(item.getNodeName().equals("button")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node caption = attributes.getNamedItem("caption");
+                    Node target = attributes.getNamedItem("target");
+                    addButton(caption.getNodeValue(), target.getNodeValue());
                 }
             }
         } catch (Exception e) {
