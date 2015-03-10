@@ -56,7 +56,6 @@ public class QuizMultipleChoiceFragment extends Fragment implements View.OnClick
 
     private OnFragmentInteractionListener mListener;
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         public void correctAnswerAction(String pageId);
     }
 

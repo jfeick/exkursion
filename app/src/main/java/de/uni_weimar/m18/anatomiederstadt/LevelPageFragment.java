@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LatexFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.SliderFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.TextFragment;
@@ -60,6 +61,15 @@ public class LevelPageFragment extends Fragment
     private ArrayList<Fragment> mChildFragments = new ArrayList<>();
 
     private OnFragmentInteractionListener mListener;
+
+    public interface OnFragmentInteractionListener {
+        /*
+        public void switchToNextPage();
+        public void switchToTarget(int pageNum);
+        */
+        public void switchToTarget(String id);
+    }
+
 
     public static LevelPageFragment newInstance(String pageId, String basePath) {
         LevelPageFragment fragment = new LevelPageFragment();
@@ -157,6 +167,12 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(sliderFragment);
     }
 
+    private void addLocation(String latitude, String longitude, String targetId) {
+        LocationFragment locationFragment =
+                LocationFragment.newInstance(latitude, longitude, targetId);
+        mChildFragments.add(locationFragment);
+    }
+
     private void populateLayoutFromXML() {
         try {
             LevelStateManager stateManager =
@@ -216,6 +232,14 @@ public class LevelPageFragment extends Fragment
                             Integer.parseInt(max.getNodeValue()),
                             suffix.getNodeValue());
                 }
+                if(item.getNodeName().equals("location")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node latitude = attributes.getNamedItem("latitude");
+                    Node longitude = attributes.getNamedItem("longitude");
+                    Node target = attributes.getNamedItem("target");
+                    addLocation(latitude.getNodeValue(), longitude.getNodeValue(),
+                            target.getNodeValue());
+                }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
@@ -252,12 +276,5 @@ public class LevelPageFragment extends Fragment
         }
     }
     */
-
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void switchToNextPage();
-        public void switchToTarget(int pageNum);
-        public void switchToTarget(String id);
-    }
 
 }

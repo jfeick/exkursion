@@ -24,14 +24,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.google.android.gms.location.LocationListener;
+
 import org.w3c.dom.NodeList;
 
+import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 
 public class LevelActivity extends FragmentActivity
         implements LevelPageFragment.OnFragmentInteractionListener,
-                   QuizMultipleChoiceFragment.OnFragmentInteractionListener {
+                   QuizMultipleChoiceFragment.OnFragmentInteractionListener,
+                   LocationFragment.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     ViewPager viewPager = null;
@@ -78,17 +82,21 @@ public class LevelActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
+    /*
     @Override
     public void switchToNextPage() {
         Log.v(LOG_TAG, "switch to next page called");
         viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
     }
+    */
+    /*
 
     @Override
     public void switchToTarget(int pageNum) {
         Log.v(LOG_TAG, "switch to target page called: " + Integer.toString(pageNum));
         viewPager.setCurrentItem(pageNum);
     }
+    */
 
     @Override
     public void switchToTarget(String pageId) {
@@ -102,6 +110,11 @@ public class LevelActivity extends FragmentActivity
         //LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
         //adapter.addPage(pageId);
         //switchToNextPage();
+        switchToTarget(pageId);
+    }
+
+    @Override
+    public void inProximityAction(String pageId) {
         switchToTarget(pageId);
     }
 }
