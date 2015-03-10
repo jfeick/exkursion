@@ -106,7 +106,7 @@ public class LatexFragment extends Fragment {
                 super.onPageFinished(view, url);
                 if(Build.VERSION.SDK_INT < 19) {
                     view.loadUrl("javascript:document.getElementById('math').innerHTML='\\\\["
-                            + getLatexCode() + "\\\\]'");
+                            + doubleEscapeTeX(getLatexCode()) + "\\\\]'");
                     view.loadUrl("javascript:MathJax.Hub.Queue(['Typeset',MathJax.Hub]);");
                 } else {
                     view.evaluateJavascript("javascript:document.getElementById('math').innerHTML='\\\\["
