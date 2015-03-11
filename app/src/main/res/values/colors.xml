@@ -17,6 +17,17 @@
 
 <resources>
     <color name="testcolor">#FF00FF</color>
+    
+    <color name="Hintergrund">#FFFDF9EE</color>
+    <color name="Blau_dunkel">#2192A4</color>
+    <color name="Blau_hell">#FF6DC5E6</color>
+    <color name="Rot_dunkel">#FFB74926</color>
+    <color name="Rot_hell">#FFE6794D</color>
+    <color name="Grau_dunkel">#FF32302D</color>
+    <color name="Grau_mittel">#FF827D77</color>
+    <color name="Grau_hell">#FFBAB3A8</color>
+    <color name="Grau_5prozent">#FFF2F2F2</color>
+    
 
     <!-- <color name="colorPrimary">@color/material_blue_grey_800</color> -->
     <color name="colorPrimary">@color/primary_material_light</color>
