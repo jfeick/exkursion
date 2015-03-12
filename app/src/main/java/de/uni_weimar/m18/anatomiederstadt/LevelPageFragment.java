@@ -180,6 +180,13 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(buttonFragment);
     }
 
+    private void addInput(String buttonCaption, String targetId) {
+        InputFragment inputFragment =
+                InputFragment.newInstance(buttonCaption, targetId);
+        mChildFragments.add(inputFragment);
+    }
+
+
     private void populateLayoutFromXML() {
         try {
             LevelStateManager stateManager =
@@ -253,6 +260,12 @@ public class LevelPageFragment extends Fragment
                     Node target = attributes.getNamedItem("target");
                     addButton(caption.getNodeValue(), target.getNodeValue());
                 }
+                if(item.getNodeName().equals("input")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node buttonCaption = attributes.getNamedItem("caption");
+                    Node target = attributes.getNamedItem("target");
+                    addInput(buttonCaption.getNodeValue(), target.getNodeValue());
+                }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
@@ -260,8 +273,6 @@ public class LevelPageFragment extends Fragment
         }
         commitChildFragments();
     }
-
-
 
     @Override
     public void onAttach(Activity activity) {
