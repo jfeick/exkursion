@@ -25,7 +25,6 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
 
-
        <!-- <item name="android:background">@color/Hintergrund</item> -->
         <item name="android:windowBackground">@color/Hintergrund</item>
        <!--  <item name="android:colorBackground">@color/Hintergrund</item> -->
@@ -35,8 +34,6 @@
 
     <style name="FarbButton" parent="android:style/Widget.Button">
         <item name="android:textSize">19sp</item>
-        <item name="android:layout_margin">0dip</item>
-        <item name="android:background">@color/Blau_dunkel</item>
         <item name="android:buttonStyle">@style/FarbButton</item>
     </style>
 
