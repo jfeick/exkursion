@@ -19,14 +19,26 @@
     <style name="AppTheme" parent="AppTheme.Base"/>
 
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
-
-        <item name="android:colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimary">@color/Blau_dunkel</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:textColorPrimary">@color/colorSecondaryDark</item>
-
-
+        <item name="android:textColorPrimary">@color/Grau_5prozent</item>
         <item name="android:windowNoTitle">true</item>
-
         <item name="windowActionBar">false</item>
+
+
+       <!-- <item name="android:background">@color/Hintergrund</item> -->
+        <item name="android:windowBackground">@color/Hintergrund</item>
+       <!--  <item name="android:colorBackground">@color/Hintergrund</item> -->
+
+
     </style>
+
+    <style name="FarbButton" parent="android:style/Widget.Button">
+        <item name="android:textSize">19sp</item>
+        <item name="android:layout_margin">0dip</item>
+        <item name="android:background">@color/Blau_dunkel</item>
+        <item name="android:buttonStyle">@style/FarbButton</item>
+    </style>
+
+
 </resources>

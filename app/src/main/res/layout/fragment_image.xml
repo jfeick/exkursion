@@ -25,5 +25,6 @@
         android:id="@+id/imageView"
         android:layout_gravity="center"
         android:adjustViewBounds="true"
-        android:padding="20dp" />
+        android:scaleType="fitStart"
+        android:paddingBottom="16dp"/>
 </FrameLayout>

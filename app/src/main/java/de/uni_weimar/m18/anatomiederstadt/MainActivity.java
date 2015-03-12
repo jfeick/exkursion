@@ -35,7 +35,7 @@ public class MainActivity extends ActionBarActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         }
 

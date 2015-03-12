@@ -23,7 +23,6 @@
         android:paddingLeft="@dimen/activity_vertical_margin"
         android:paddingRight="@dimen/activity_vertical_margin"
         android:id="@+id/text_view"
-        android:textColor="@color/Grau_dunkel"
-        android:layout_marginBottom="16dp"/>
+        android:textColor="@color/Rot_dunkel"/>
 
 </FrameLayout>

@@ -69,6 +69,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.google.android.gms:play-services:6.5.87'
+    compile 'com.eftimoff:android-pathview:1.0.5@aar'
     compile('com.crashlytics.sdk.android:crashlytics:2.2.2@aar') {
         transitive = true;
     }
