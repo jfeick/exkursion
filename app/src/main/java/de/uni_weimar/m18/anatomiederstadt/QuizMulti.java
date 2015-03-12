@@ -17,54 +17,68 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
 import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.CheckBox;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+
+import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link InputFragment.OnFragmentInteractionListener} interface
+ * {@link QuizMulti.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link InputFragment#newInstance} factory method to
+ * Use the {@link QuizMulti#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class InputFragment extends Fragment {
+public class QuizMulti extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mButtonCaption;
+    private ArrayList<String> mOptions;
     private String mTargetId;
+
+
 
     private OnFragmentInteractionListener mListener;
 
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        public void onInputClick(String pageId);
+        public void onMultiClick(String pageId);
     }
 
-
-    public static InputFragment newInstance(String buttonCaption, String targetId) {
-        InputFragment fragment = new InputFragment();
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment QuizMulti.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static QuizMulti newInstance(ArrayList<String> options, String targetId) {
+        QuizMulti fragment = new QuizMulti();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, buttonCaption);
+        args.putStringArrayList(ARG_PARAM1, options);
         args.putString(ARG_PARAM2, targetId);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public InputFragment() {
+    public QuizMulti() {
         // Required empty public constructor
     }
 
@@ -72,7 +86,7 @@ public class InputFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mButtonCaption = getArguments().getString(ARG_PARAM1);
+            mOptions = getArguments().getStringArrayList(ARG_PARAM1);
             mTargetId = getArguments().getString(ARG_PARAM2);
         }
     }
@@ -81,25 +95,41 @@ public class InputFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_input, container, false);
+        View view = inflater.inflate(R.layout.fragment_quiz_multi, container, false);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.quizMultiLayout);
 
-        final EditText editText = (EditText) view.findViewById(R.id.editText);
+        for(int i = 0; i < mOptions.size(); ++i) {
+            CheckBox checkBox = new CheckBox(getActivity());
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(16, 0, 0 ,0);
+            checkBox.setLayoutParams(layoutParams);
+            checkBox.setText(mOptions.get(i));
+            linearLayout.addView(checkBox);
+        }
 
-        Button button = (Button) view.findViewById(R.id.inputButton);
-        button.setText(mButtonCaption);
+        Button button = new Button(getActivity());
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.CENTER;
+        button.setLayoutParams(layoutParams);
+
+        button.setText("Eingeben");
+
+        linearLayout.addView(button);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
                 if (mListener != null) {
-                    mListener.onInputClick(mTargetId);
+                    mListener.onMultiClick(mTargetId);
                 }
             }
         });
+
         return view;
     }
+
 
     @Override
     public void onAttach(Activity activity) {
@@ -117,5 +147,6 @@ public class InputFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
 
 }

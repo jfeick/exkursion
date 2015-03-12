@@ -186,6 +186,11 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(inputFragment);
     }
 
+    private void addQuizMulti(ArrayList<String> options, String targetId) {
+        QuizMulti quizMulti = QuizMulti.newInstance(options, targetId);
+        mChildFragments.add(quizMulti);
+    }
+
 
     private void populateLayoutFromXML() {
         try {
@@ -265,6 +270,22 @@ public class LevelPageFragment extends Fragment
                     Node buttonCaption = attributes.getNamedItem("caption");
                     Node target = attributes.getNamedItem("target");
                     addInput(buttonCaption.getNodeValue(), target.getNodeValue());
+                }
+                if(item.getNodeName().equals("quizmulti")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node target = attributes.getNamedItem("target");
+                    //NodeList optionsList = item.getElementsByTagName("option");
+                    Node parent = item.getParentNode();
+                    ArrayList<String> options = new ArrayList<>();
+                    if (parent instanceof Element) {
+                        final Element e = (Element) parent;
+                        NodeList optionsList = e.getElementsByTagName("option");
+                        for(int k = 0; k < optionsList.getLength(); ++k) {
+                            Node option = optionsList.item(k);
+                            options.add(option.getTextContent());
+                        }
+                        addQuizMulti(options, target.getNodeValue());
+                    }
                 }
             }
         } catch (Exception e) {

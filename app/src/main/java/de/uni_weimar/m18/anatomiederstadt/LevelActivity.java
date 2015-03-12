@@ -38,7 +38,8 @@ public class LevelActivity extends FragmentActivity
                    QuizMultipleChoiceFragment.OnFragmentInteractionListener,
                    LocationFragment.OnFragmentInteractionListener,
                    ButtonFragment.OnFragmentInteractionListener,
-                   InputFragment.OnFragmentInteractionListener {
+                   InputFragment.OnFragmentInteractionListener,
+                   QuizMulti.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     ViewPager viewPager = null;
@@ -129,6 +130,11 @@ public class LevelActivity extends FragmentActivity
 
     @Override
     public void onInputClick(String pageId) {
+        switchToTarget(pageId);
+    }
+
+    @Override
+    public void onMultiClick(String pageId) {
         switchToTarget(pageId);
     }
 }
