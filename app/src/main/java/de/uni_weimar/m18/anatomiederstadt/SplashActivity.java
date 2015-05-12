@@ -16,16 +16,11 @@
 
 package de.uni_weimar.m18.anatomiederstadt;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AlphaAnimation;
@@ -59,7 +54,6 @@ public class SplashActivity extends FragmentActivity {
                 start();
 
         final ImageView logoImage = (ImageView) findViewById(R.id.logoImage);
-        final Context context = this;
 
         a.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -70,6 +64,14 @@ public class SplashActivity extends FragmentActivity {
             @Override
             public void onAnimationEnd(Animation animation) {
                 logoImage.setVisibility(View.VISIBLE);
+
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        launchMainActivity();
+                    }
+                }, 3000);
+
             }
 
             @Override
@@ -77,15 +79,21 @@ public class SplashActivity extends FragmentActivity {
             }
         });
 
+
+
         logoImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, MainActivity.class);
-                startActivity(intent);
+                launchMainActivity();
             }
         });
 
         logoImage.startAnimation(a);
 
+    }
+
+    private void launchMainActivity() {
+        Intent intent = new Intent(this, LevelSelectActivity.class);
+        startActivity(intent);
     }
 }

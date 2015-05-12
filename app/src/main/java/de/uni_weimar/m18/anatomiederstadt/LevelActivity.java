@@ -26,8 +26,6 @@ import android.view.MenuItem;
 
 import org.w3c.dom.NodeList;
 
-import java.io.InputStream;
-
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
@@ -41,7 +39,7 @@ public class LevelActivity extends FragmentActivity
                    InputFragment.OnFragmentInteractionListener,
                    QuizMulti.OnFragmentInteractionListener {
 
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = LevelSelectActivity.class.getSimpleName();
     ViewPager viewPager = null;
     String mBasePath = null;
 
@@ -52,7 +50,7 @@ public class LevelActivity extends FragmentActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         viewPager = (ViewPager) findViewById(R.id.pager);
         LevelStateManager stateManager =
-                ((MainApplication)getApplicationContext()).getStateManager();
+                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager();
         mBasePath = stateManager.getBasePath();
         try {
             NodeList pageList = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page");

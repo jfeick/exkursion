@@ -18,11 +18,14 @@
 <resources>
     <style name="AppTheme" parent="AppTheme.Base"/>
 
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/Blau_dunkel</item>
         <item name="android:colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:textColorPrimary">@color/Grau_5prozent</item>
+        <item name="android:textColorPrimary">@color/Grau_dunkel</item>
+
+
         <item name="android:windowNoTitle">true</item>
+
         <item name="windowActionBar">false</item>
 
        <!-- <item name="android:background">@color/Hintergrund</item> -->

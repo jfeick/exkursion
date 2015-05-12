@@ -195,7 +195,7 @@ public class LevelPageFragment extends Fragment
     private void populateLayoutFromXML() {
         try {
             LevelStateManager stateManager =
-                    ((MainApplication) getActivity().getApplicationContext()).getStateManager();
+                    ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager();
             Document levelXml = stateManager.getLevelXML();
             Element rootElement = levelXml.getDocumentElement();
             Log.v(LOG_TAG, "RootElement: " + rootElement.getTagName());

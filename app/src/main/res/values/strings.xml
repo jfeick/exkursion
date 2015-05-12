@@ -19,7 +19,7 @@
 
     <string name="app_name">Anatomie der Stadt</string>
 
-    <string name="GAME_BASE_URL">http://m18.uni-weimar.de/exkursion/</string>
+    <string name="GAME_BASE_URL">https://m18.uni-weimar.de/exkursion/</string>
 
 
     <string name="hello_world">Placeholder (LEVEL)</string>
@@ -31,5 +31,18 @@
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="login_welcome">Bitte logge Dich mit deiner E-Mail-Adresse und deinem gewählten Passwort ein.</string>
+    <string name="register_link">REGISTRIEREN</string>
+    <string name="no_account">Du hast noch keinen Zugang?</string>
+    <string name="action_sign_in_short">Log in</string>
+    <string name="username_or_password_incorrect">Benutzername oder Passwort ist falsch</string>
+    <string name="password_empty">Dieses Feld darf nicht leer sein</string>
+    <string name="password_too_short">Dieses Passwort ist zu kurz</string>
+    <string name="username_empty">Dieses Feld darf nicht leer sein</string>
+    <string name="signing_in">Signing in...</string>
+    <string name="welcome_message">Willkommen</string>
+    <string name="api_domain">m18.uni-weimar.de</string>
+    <string name="app_code">2342EXKURSION</string>
 
 </resources>

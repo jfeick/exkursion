@@ -16,21 +16,31 @@
 
 package de.uni_weimar.m18.anatomiederstadt;
 
-import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import com.baasbox.android.BaasUser;
 
 
-public class MainActivity extends ActionBarActivity {
+public class LevelSelectActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final String LOG_TAG = LevelSelectActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        if (BaasUser.current() == null) {
+            startLoginScreen();
+            return;
+        }
+
+        setContentView(R.layout.activity_level_select);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         if (toolbar != null) {
@@ -44,6 +54,13 @@ public class MainActivity extends ActionBarActivity {
                     .add(R.id.container, new LevelListFragment())
                     .commit();
         }
+
+
+        final String welcomeMessage = getString(R.string.welcome_message)
+                + " "
+                + BaasUser.current().getName();
+        Toast.makeText(this, welcomeMessage, Toast.LENGTH_LONG).show();
+
     }
 
 
@@ -67,6 +84,13 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startLoginScreen() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
 }

@@ -3,6 +3,8 @@ package de.uni_weimar.m18.anatomiederstadt;
 import android.app.Application;
 
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
+
+import com.baasbox.android.BaasBox;
 import com.crashlytics.android.Crashlytics;
 import io.fabric.sdk.android.Fabric;
 
@@ -21,11 +23,21 @@ import io.fabric.sdk.android.Fabric;
  * See the License for the specific language governing permissions and
  *   limitations under the License.
  */
-public class MainApplication extends Application {
+public class AnatomieDerStadtApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Fabric.with(this, new Crashlytics());    }
+        Fabric.with(this, new Crashlytics());
+
+        BaasBox.builder(this)
+                .setAuthentication(BaasBox.Config.AuthType.SESSION_TOKEN)
+                .setApiDomain(getString(R.string.api_domain))
+                .setUseHttps(true)
+                .setPort(getResources().getInteger(R.integer.api_port))
+                .setAppCode(getString(R.string.app_code))
+                .init();
+
+    }
 
     private LevelStateManager levelStateManager = new LevelStateManager();
 
