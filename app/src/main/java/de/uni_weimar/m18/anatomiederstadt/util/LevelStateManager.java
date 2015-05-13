@@ -16,14 +16,31 @@
 
 package de.uni_weimar.m18.anatomiederstadt.util;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+
 import org.w3c.dom.Document;
 
+import java.util.Map;
+
+import de.uni_weimar.m18.anatomiederstadt.R;
+
 public class LevelStateManager {
+
+    private Activity activity;
 
     private Document levelXML;
     private String basePath;
 
+    private Map<String, Float> varsFloat;
+    private Map<String, Integer> varsInteger;
+
     public LevelStateManager() {
+    }
+
+    public void updateActivity(Activity activity) {
+        this.activity = activity;
     }
 
     public Document getLevelXML() {
@@ -41,4 +58,33 @@ public class LevelStateManager {
     public String getBasePath() {
         return basePath;
     }
+
+    public void saveFloat(String identifier, float value) {
+        String key = basePath + "_" + identifier;
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putFloat(key, value);
+        editor.commit();
+    }
+
+    public float getFloat(String identifier) {
+        String key = basePath + "_" + identifier;
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getFloat(key, 1.0f);
+    }
+
+    public void saveInt(String identifier, int value) {
+        String key = basePath + "_" + identifier;
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    public int getInt(String identifier) {
+        String key = basePath + "_" + identifier;
+        SharedPreferences sharedPref = activity.getPreferences(Context.MODE_PRIVATE);
+        return sharedPref.getInt(key, 1);
+    }
+
 }

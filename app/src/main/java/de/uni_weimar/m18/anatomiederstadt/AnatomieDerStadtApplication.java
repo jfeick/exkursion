@@ -1,6 +1,8 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 
@@ -41,7 +43,8 @@ public class AnatomieDerStadtApplication extends Application {
 
     private LevelStateManager levelStateManager = new LevelStateManager();
 
-    public LevelStateManager getStateManager() {
+    public LevelStateManager getStateManager(Activity activity) {
+        levelStateManager.updateActivity(activity);
         return levelStateManager;
     }
 }

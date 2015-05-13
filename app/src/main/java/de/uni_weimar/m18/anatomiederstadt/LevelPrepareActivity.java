@@ -206,7 +206,7 @@ public class LevelPrepareActivity extends FragmentActivity
         mCursor.close();
 
         LevelStateManager stateManager =
-                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager();
+                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
         if (stateManager.getLevelXML() != null) {
             Intent intent = new Intent(this, LevelActivity.class);
             //intent.putExtra("level_path", "level0test");
@@ -232,7 +232,7 @@ public class LevelPrepareActivity extends FragmentActivity
             fstream = new FileInputStream(levelXmlFile);
             Document xmlDocument = documentBuilder.parse(new InputSource(fstream));
             LevelStateManager stateManager =
-                    ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager();
+                    ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
             stateManager.setLevelXML(xmlDocument);
             stateManager.setBasePath(basePath);
         } catch (FileNotFoundException e) {

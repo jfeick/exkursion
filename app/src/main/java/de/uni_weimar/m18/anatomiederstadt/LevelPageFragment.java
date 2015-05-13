@@ -33,6 +33,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
@@ -42,6 +44,10 @@ import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.SliderFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.TextFragment;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
+import parsii.eval.Expression;
+import parsii.eval.Parser;
+import parsii.eval.Scope;
+import parsii.tokenizer.ParseException;
 
 public class LevelPageFragment extends Fragment
  /*   implements QuizMultipleChoiceFragment.OnFragmentInteractionListener */ {
@@ -180,9 +186,9 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(buttonFragment);
     }
 
-    private void addInput(String buttonCaption, String targetId) {
+    private void addInput(String buttonCaption, String var, String targetId) {
         InputFragment inputFragment =
-                InputFragment.newInstance(buttonCaption, targetId);
+                InputFragment.newInstance(buttonCaption, var, targetId);
         mChildFragments.add(inputFragment);
     }
 
@@ -195,7 +201,7 @@ public class LevelPageFragment extends Fragment
     private void populateLayoutFromXML() {
         try {
             LevelStateManager stateManager =
-                    ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager();
+                    ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
             Document levelXml = stateManager.getLevelXML();
             Element rootElement = levelXml.getDocumentElement();
             Log.v(LOG_TAG, "RootElement: " + rootElement.getTagName());
@@ -265,11 +271,23 @@ public class LevelPageFragment extends Fragment
                     Node target = attributes.getNamedItem("target");
                     addButton(caption.getNodeValue(), target.getNodeValue());
                 }
+                if(item.getNodeName().equals("evaluate")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node var = attributes.getNamedItem("var");
+                    String expression = item.getTextContent();
+                    evaluateMath(var.getNodeValue(), expression);
+                }
+                if(item.getNodeName().equals("var")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node name = attributes.getNamedItem("name");
+                    storeVariable(name.getNodeValue(), item.getTextContent());
+                }
                 if(item.getNodeName().equals("input")) {
                     NamedNodeMap attributes = item.getAttributes();
                     Node buttonCaption = attributes.getNamedItem("caption");
                     Node target = attributes.getNamedItem("target");
-                    addInput(buttonCaption.getNodeValue(), target.getNodeValue());
+                    Node var = attributes.getNamedItem("var");
+                    addInput(buttonCaption.getNodeValue(), var.getNodeValue(), target.getNodeValue());
                 }
                 if(item.getNodeName().equals("quizmulti")) {
                     NamedNodeMap attributes = item.getAttributes();
@@ -293,6 +311,34 @@ public class LevelPageFragment extends Fragment
             e.printStackTrace();
         }
         commitChildFragments();
+    }
+
+    private void storeVariable(String name, String value) {
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+        stateManager.saveFloat(name, Float.parseFloat(value));
+    }
+
+    private void evaluateMath(String var, String expression) {
+        Matcher m = Pattern.compile("\\$([_a-zA-Z][_a-zA-Z0-9]{0,30})").matcher(expression);
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+        String replacedExpr = expression;
+        while(m.find()) {
+            replacedExpr = replacedExpr.replace(m.group(0),
+                    Float.toString(stateManager.getFloat(m.group(1))));
+        }
+        Scope scope = Scope.create();
+        Expression expr;
+        double result = 1.0;
+        try {
+            expr = Parser.parse(replacedExpr, scope);
+            result = expr.evaluate();
+        } catch (ParseException e) {
+            Log.d(LOG_TAG, "Parser exception in expression");
+        }
+        Log.d(LOG_TAG, "Evaluation result:" + Double.toString(result));
+        stateManager.saveFloat(var, (float) result);
     }
 
     @Override

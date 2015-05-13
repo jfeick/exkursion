@@ -25,6 +25,8 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.baasbox.android.BaasUser;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
 
 
 public class LevelSelectActivity extends AppCompatActivity {
@@ -59,8 +61,11 @@ public class LevelSelectActivity extends AppCompatActivity {
         final String welcomeMessage = getString(R.string.welcome_message)
                 + " "
                 + BaasUser.current().getName();
-        Toast.makeText(this, welcomeMessage, Toast.LENGTH_LONG).show();
-
+        //Toast.makeText(this, welcomeMessage, Toast.LENGTH_LONG).show();
+        SnackbarManager.show(
+                Snackbar.with(getApplicationContext())
+                        .text(welcomeMessage)
+                , this);
     }
 
 

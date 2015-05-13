@@ -50,7 +50,7 @@ public class LevelActivity extends FragmentActivity
         FragmentManager fragmentManager = getSupportFragmentManager();
         viewPager = (ViewPager) findViewById(R.id.pager);
         LevelStateManager stateManager =
-                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager();
+                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
         mBasePath = stateManager.getBasePath();
         try {
             NodeList pageList = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page");

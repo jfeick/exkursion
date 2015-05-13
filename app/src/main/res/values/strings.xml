@@ -44,5 +44,6 @@
     <string name="welcome_message">Willkommen</string>
     <string name="api_domain">m18.uni-weimar.de</string>
     <string name="app_code">2342EXKURSION</string>
+    <string name="preference_file_key">de.uni_weimar.m18.anatomiederstadt.levelstate</string>
 
 </resources>

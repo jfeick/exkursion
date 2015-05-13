@@ -21,12 +21,15 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+
+import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 
 
 /**
@@ -42,10 +45,13 @@ public class InputFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_PARAM3 = "param3";
 
     // TODO: Rename and change types of parameters
     private String mButtonCaption;
+    private String mVar;
     private String mTargetId;
+
 
     private OnFragmentInteractionListener mListener;
 
@@ -55,11 +61,12 @@ public class InputFragment extends Fragment {
     }
 
 
-    public static InputFragment newInstance(String buttonCaption, String targetId) {
+    public static InputFragment newInstance(String buttonCaption, String var, String targetId) {
         InputFragment fragment = new InputFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, buttonCaption);
-        args.putString(ARG_PARAM2, targetId);
+        args.putString(ARG_PARAM2, var);
+        args.putString(ARG_PARAM3, targetId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,7 +80,8 @@ public class InputFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mButtonCaption = getArguments().getString(ARG_PARAM1);
-            mTargetId = getArguments().getString(ARG_PARAM2);
+            mVar = getArguments().getString(ARG_PARAM2);
+            mTargetId = getArguments().getString(ARG_PARAM3);
         }
     }
 
@@ -93,6 +101,13 @@ public class InputFragment extends Fragment {
                 InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
+                LevelStateManager stateManager =
+                        ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+
+                String value = "0.0";
+                if(!TextUtils.isEmpty(editText.getText())) {
+                    stateManager.saveFloat(mVar, Float.parseFloat(String.valueOf(editText.getText())));
+                }
                 if (mListener != null) {
                     mListener.onInputClick(mTargetId);
                 }
