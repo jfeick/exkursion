@@ -28,12 +28,13 @@ import org.w3c.dom.NodeList;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
-import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.QuizMulti;
+import de.uni_weimar.m18.anatomiederstadt.element.Quiz4Buttons;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 
 public class LevelActivity extends FragmentActivity
         implements LevelPageFragment.OnFragmentInteractionListener,
-                   QuizMultipleChoiceFragment.OnFragmentInteractionListener,
+                   Quiz4Buttons.OnFragmentInteractionListener,
                    LocationFragment.OnFragmentInteractionListener,
                    ButtonFragment.OnFragmentInteractionListener,
                    InputFragment.OnFragmentInteractionListener,

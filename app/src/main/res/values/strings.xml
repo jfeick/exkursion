@@ -45,5 +45,11 @@
     <string name="api_domain">m18.uni-weimar.de</string>
     <string name="app_code">2342EXKURSION</string>
     <string name="preference_file_key">de.uni_weimar.m18.anatomiederstadt.levelstate</string>
+    <string name="sorry_correct_answer">Sorry, die richtige Antwort lautete</string>
+    <string name="sorry_correct_answer_dialog_title">Leider falsch</string>
+    <string name="sorry_dismiss">OK</string>
+    <string name="wrong_answer_dialog_title">Falsch :(</string>
+    <string name="wrong_answer_dismiss">OK</string>
+    <string name="congratulations_format_string">Richtig! %d Punkte!</string>
 
 </resources>

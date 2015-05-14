@@ -40,7 +40,8 @@ import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LatexFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
-import de.uni_weimar.m18.anatomiederstadt.element.QuizMultipleChoiceFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.Quiz4Buttons;
+import de.uni_weimar.m18.anatomiederstadt.element.QuizMulti;
 import de.uni_weimar.m18.anatomiederstadt.element.SliderFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.TextFragment;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
@@ -50,7 +51,7 @@ import parsii.eval.Scope;
 import parsii.tokenizer.ParseException;
 
 public class LevelPageFragment extends Fragment
- /*   implements QuizMultipleChoiceFragment.OnFragmentInteractionListener */ {
+ /*   implements Quiz4Buttons.OnFragmentInteractionListener */ {
 
     private static final String LOG_TAG = LevelPageFragment.class.getSimpleName();
 
@@ -156,12 +157,25 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(imageFragment);
     }
 
+    /*
     void addQuizMultipleChoice(String button1text, String button2text, String button3text,
                                String button4text, int correctAnswer, String correctTargetId) {
-        QuizMultipleChoiceFragment quizFragment = QuizMultipleChoiceFragment.newInstance(
+        Quiz4Buttons quizFragment = Quiz4Buttons.newInstance(
                 button1text, button2text, button3text, button4text, correctAnswer,
                 correctTargetId);
         mChildFragments.add(quizFragment);
+    }
+    */
+
+    void addQuiz4Element(String target, String correct, String button1, String button2, String button3,
+                         String button4, String hint, String points, String penalty) {
+        int correctInt = Integer.parseInt(correct);
+        int pointsInt  = Integer.parseInt(points);
+        int penaltyInt = Integer.parseInt(penalty);
+        Quiz4Buttons quiz4Buttons = Quiz4Buttons.newInstance(
+                target, correctInt, button1, button2, button3, button4, hint, pointsInt, penaltyInt, mPageId
+        );
+        mChildFragments.add(quiz4Buttons);
     }
 
     private void addLatex(String latexCode) {
@@ -231,6 +245,57 @@ public class LevelPageFragment extends Fragment
                     Node src = attributes.getNamedItem("src");
                     addImage(src.getNodeValue());
                 }
+                if(item.getNodeName().equals("quiz")) {
+                    String target = "";
+                    String correct = "";
+                    String button1 = "";
+                    String button2 = "";
+                    String button3 = "";
+                    String button4 = "";
+                    String hint = "";
+                    String points = "";
+                    String penalty = "";
+
+                    NodeList quizParamaters = item.getChildNodes();
+                    for (int k = 0; k < quizParamaters.getLength(); ++k) {
+                        Node child = quizParamaters.item(k);
+                        String quizParameter = child.getNodeName();
+                        switch (quizParameter) {
+                            case "target":
+                                target = child.getTextContent();
+                                break;
+                            case "correct":
+                                correct = child.getTextContent();
+                                break;
+                            case "button1":
+                                button1 = child.getTextContent();
+                                break;
+                            case "button2":
+                                button2 = child.getTextContent();
+                                break;
+                            case "button3":
+                                button3 = child.getTextContent();
+                                break;
+                            case "button4":
+                                button4 = child.getTextContent();
+                                break;
+                            case "hint":
+                                hint = child.getTextContent();
+                                break;
+                            case "points":
+                                points = child.getTextContent();
+                                break;
+                            case "penalty":
+                                penalty = child.getTextContent();
+                                break;
+                            default:
+                                break;
+                                //throw new IllegalArgumentException("Invalid quiz parameter" + quizParameter);
+                        }
+                    }
+                    addQuiz4Element(target, correct, button1, button2, button3, button4, hint, points, penalty);
+                }
+                /*
                 if (item.getNodeName().equals("quiz")) {
                     NamedNodeMap attributes = item.getAttributes();
                     Node button1 = attributes.getNamedItem("button1");
@@ -245,6 +310,7 @@ public class LevelPageFragment extends Fragment
                             Integer.parseInt(correctAnswer.getNodeValue()),
                             correctTarget.getNodeValue());
                 }
+                */
                 if(item.getNodeName().equals("latex")) {
                     addLatex(item.getTextContent());
                 }

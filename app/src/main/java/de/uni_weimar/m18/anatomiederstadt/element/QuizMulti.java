@@ -14,10 +14,9 @@
  *   limitations under the License.
  */
 
-package de.uni_weimar.m18.anatomiederstadt;
+package de.uni_weimar.m18.anatomiederstadt.element;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.Gravity;
@@ -30,7 +29,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
-import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
+import de.uni_weimar.m18.anatomiederstadt.R;
 
 
 /**
