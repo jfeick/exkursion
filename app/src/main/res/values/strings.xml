@@ -51,5 +51,14 @@
     <string name="wrong_answer_dialog_title">Falsch :(</string>
     <string name="wrong_answer_dismiss">OK</string>
     <string name="congratulations_format_string">Richtig! %d Punkte!</string>
+    <string name="title_activity_register">RegisterActivity</string>
+    <string name="register_welcome">Bitte registriere Dich mit deiner Uni-Weimar-Email-Adresse und deinem gewünschten Passwort.</string>
+    <string name="register_successfull_title">Willkommen!</string>
+    <string name="register_successfull_content">Du hast dich erfolgreich für Anatomie der Stadt registriert. Wir loggen dich jetzt ein.</string>
+    <string name="register_successfull_dismiss">OK</string>
+    <string name="required_email_suffix">\@uni-weimar.de</string>
+    <string name="request_required_email_suffix">Bitte benutze Deine @uni-weimar.de - Email-Adresse</string>
+    <string name="show_password">Passwort anzeigen</string>
+    <string name="action_logout">Log out</string>
 
 </resources>

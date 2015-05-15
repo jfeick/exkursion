@@ -36,6 +36,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.baasbox.android.BaasBox;
+import com.baasbox.android.BaasHandler;
+import com.baasbox.android.BaasResult;
+import com.baasbox.android.BaasUser;
+import com.baasbox.android.RequestToken;
+
 import de.uni_weimar.m18.anatomiederstadt.data.level.LevelColumns;
 
 public class LevelListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -80,7 +86,32 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
             updateLevels();
             return true;
         }
+        if(id == R.id.action_logout) {
+            logOut();
+            return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private boolean logOut() {
+        BaasUser.current().logout(logoutHandler);
+        return true;
+    }
+
+    private RequestToken logoutToken;
+    private final BaasHandler<Void> logoutHandler = new BaasHandler<Void>() {
+        @Override
+        public void handle(BaasResult<Void> baasResult) {
+            logoutToken = null;
+            onLogout();
+        }
+    };
+
+    private void onLogout() {
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        getActivity().finish();
     }
 
     @Override
@@ -116,7 +147,7 @@ public class LevelListFragment extends Fragment implements LoaderManager.LoaderC
                 //Log.v(LOG_TAG, "Uri to intent: " + LevelContractOLD.LevelEntry.buildLevelsUri(idx));
                 Uri uri = ContentUris.withAppendedId(LevelColumns.CONTENT_URI, idx);
                 Log.v(LOG_TAG, "Uri to intent: " + uri);
-                if( cursor != null ) {
+                if (cursor != null) {
                     Intent intent = new Intent(getActivity(), LevelPrepareActivity.class)
                             .setData(
                                     uri

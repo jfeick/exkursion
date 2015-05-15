@@ -17,7 +17,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="de.uni_weimar.m18.anatomiederstadt.InputFragment"
+    tools:context="de.uni_weimar.m18.anatomiederstadt.element.InputFragment"
     android:orientation="horizontal"
     android:descendantFocusability="beforeDescendants"
     android:focusableInTouchMode="true"
@@ -36,7 +36,7 @@
         android:hint="0.0"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
-        android:autoText="false"
+
         android:numeric="decimal"
         android:singleLine="true"
         android:textAlignment="viewEnd"

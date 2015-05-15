@@ -4,9 +4,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -14,20 +14,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.baasbox.android.BaasException;
 import com.baasbox.android.BaasHandler;
 import com.baasbox.android.BaasIOException;
 import com.baasbox.android.BaasResult;
 import com.baasbox.android.BaasUser;
 import com.baasbox.android.RequestToken;
+import com.baasbox.android.json.JsonObject;
 
 import java.net.UnknownHostException;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private final static String SIGNUP_TOKEN_KEY = "signup_token_key";
     public static final String EXTRA_USERNAME = "de.uni_weimar.m18.exkursion.username.EXTRA";
@@ -43,10 +47,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private RequestToken mSignupOrLogin;
 
+    private Context mContext;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_register);
+
+        mContext = this;
 
         if (savedInstanceState != null) {
             mSignupOrLogin = savedInstanceState.getParcelable(SIGNUP_TOKEN_KEY);
@@ -55,38 +63,37 @@ public class LoginActivity extends AppCompatActivity {
         mUsername = getIntent().getStringExtra(EXTRA_USERNAME);
         mUserView = (EditText) findViewById(R.id.email);
         mUserView.setText(mUsername);
-        mLoginStatusView = findViewById(R.id.login_status);
-        mLoginFormView = findViewById(R.id.login_form);
-        mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
+        mLoginStatusView = findViewById(R.id.register_status);
+        mLoginFormView = findViewById(R.id.register_form);
+        mLoginStatusMessageView = (TextView) findViewById(R.id.register_status_message);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == R.id.login || actionId == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                if (actionId == R.id.register || actionId == EditorInfo.IME_NULL) {
+                    attemptRegister();
                     return true;
                 }
                 return false;
             }
         });
 
-        findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
+        CheckBox checkBox = (CheckBox) findViewById(R.id.show_password_checkbox);
+        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View v) {
-                attemptLogin();
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                } else {
+                    mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                }
             }
         });
 
-        TextView registerLink = (TextView) findViewById(R.id.register_link);
-        registerLink.setPaintFlags(registerLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
-        final Context context = this;
-        registerLink.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.register_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, RegisterActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+                attemptRegister();
             }
         });
     }
@@ -117,7 +124,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void completeLogin(boolean success) {
+    private void completeRegister(boolean success) {
         showProgress(false);
         mSignupOrLogin = null;
         if (success) {
@@ -138,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
         return true;
     }
 
-    public void attemptLogin() {
+    public void attemptRegister() {
         // Reset errors
         mUserView.setError(null);
         mPasswordView.setError(null);
@@ -161,11 +168,12 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
-        // check for valid email address
-
-        // TODO: check for uni weimar address
         if (TextUtils.isEmpty(mUsername)) {
             mUserView.setError(getString(R.string.username_empty));
+            focusView = mUserView;
+            cancel = true;
+        } else if (!mUsername.endsWith(getString(R.string.required_email_suffix))) {
+            mUserView.setError(getString(R.string.request_required_email_suffix));
             focusView = mUserView;
             cancel = true;
         }
@@ -175,14 +183,16 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             mLoginStatusMessageView.setText(getString(R.string.signing_in));
             showProgress(true);
-            loginWithBaasBox();
+            registerWithBaasBox();
         }
     }
 
-    private void loginWithBaasBox() {
+    private void registerWithBaasBox() {
         BaasUser user = BaasUser.withUserName(mUsername);
         user.setPassword(mPassword);
-        mSignupOrLogin = user.login(onComplete);
+        JsonObject extras = user.getScope(BaasUser.Scope.PRIVATE)
+                .put("email", mUsername);
+        mSignupOrLogin = user.signup(onComplete);
     }
 
     private final BaasHandler<BaasUser> onComplete = new BaasHandler<BaasUser>() {
@@ -198,8 +208,19 @@ public class LoginActivity extends AppCompatActivity {
                 // TODO - display error that network is down
                 Log.e("ERROR", "Network is down!");
             }
-
-            completeLogin(baasResult.isSuccess());
+            if (baasResult.isSuccess()) {
+                new MaterialDialog.Builder(mContext)
+                        .title(getString(R.string.register_successfull_title))
+                        .content(getString(R.string.register_successfull_content))
+                        .positiveText(R.string.register_successfull_dismiss)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                completeRegister(true);
+                            }
+                        })
+                        .show();
+            }
         }
     };
 

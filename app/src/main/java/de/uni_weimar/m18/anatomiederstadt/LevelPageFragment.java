@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.InputFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LatexFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.Quiz4Buttons;

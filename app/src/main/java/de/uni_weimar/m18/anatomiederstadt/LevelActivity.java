@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import org.w3c.dom.NodeList;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.InputFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMulti;
 import de.uni_weimar.m18.anatomiederstadt.element.Quiz4Buttons;

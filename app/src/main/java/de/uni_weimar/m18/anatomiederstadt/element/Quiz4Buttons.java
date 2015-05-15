@@ -38,6 +38,7 @@ import com.baasbox.android.json.JsonObject;
 import com.baasbox.android.net.HttpRequest;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.EventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -137,6 +138,7 @@ public class Quiz4Buttons extends Fragment implements View.OnClickListener {
                             Log.d(LOG_TAG, "Error. Could not submit score.");
                         }
                     }
+
                 }
         );
 
@@ -188,12 +190,44 @@ public class Quiz4Buttons extends Fragment implements View.OnClickListener {
                             .position(Snackbar.SnackbarPosition.TOP)
                             .margin(32, 32)
                             .backgroundDrawable(R.drawable.points_snackbar_shape)
-                            .text(congratulations));
+                            .text(congratulations)
+                            .eventListener(new EventListener() {
+                                @Override
+                                public void onShow(Snackbar snackbar) {
+
+                                }
+
+                                @Override
+                                public void onShowByReplace(Snackbar snackbar) {
+
+                                }
+
+                                @Override
+                                public void onShown(Snackbar snackbar) {
+
+                                }
+
+                                @Override
+                                public void onDismiss(Snackbar snackbar) {
+
+                                }
+
+                                @Override
+                                public void onDismissByReplace(Snackbar snackbar) {
+
+                                }
+
+                                @Override
+                                public void onDismissed(Snackbar snackbar) {
+                                    if(mListener != null) {
+                                        mListener.correctAnswerAction(mTarget);
+                                    }
+                                }
+                            })
+            );
             //Toast.makeText(getActivity(), "RRRRRRRICHTIG!", Toast.LENGTH_SHORT).show();
             submitPointsToBackend(mPoints);
-            if(mListener != null) {
-                mListener.correctAnswerAction(mTarget);
-            }
+
         }
         else { // wrong answer
             mPoints -= mPenalty;

@@ -1,15 +1,14 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="de.uni_weimar.m18.anatomiederstadt.LoginActivity">
-
+    tools:context="de.uni_weimar.m18.anatomiederstadt.RegisterActivity">
 
     <LinearLayout
-        android:id="@+id/login_status"
+        android:id="@+id/register_status"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:background="@color/Blau_hell"
-        android:gravity="center"
+        android:background="@color/Blau_dunkel"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
         android:visibility="gone">
 
@@ -20,36 +19,34 @@
             android:layout_marginBottom="8dp" />
 
         <TextView
-            android:id="@+id/login_status_message"
+            android:id="@+id/register_status_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:fontFamily="sans-serif-light"
-            android:text="Logging in..."
+            android:text="Signing up..."
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
-    <!-- Login Form -->
+    <!-- Register Form -->
 
     <ScrollView
-        android:id="@+id/login_form"
+        android:id="@+id/register_form"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/Blau_hell"
-        android:visibility="visible"
+        android:background="@color/Blau_dunkel"
         >
-    <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/card_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:background="@color/Hintergrund"
-        card_view:cardCornerRadius="4dp"
-        card_view:cardElevation="4dp"
-        card_view:cardUseCompatPadding="true"
-        card_view:contentPadding="8dp">
-
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/card_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="16dp"
+            android:background="@color/Hintergrund"
+            card_view:cardCornerRadius="4dp"
+            card_view:cardElevation="4dp"
+            card_view:cardUseCompatPadding="true"
+            card_view:contentPadding="8dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -64,7 +61,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="16dp"
                     android:gravity="center_horizontal"
-                    android:text="Login"
+                    android:text="Register"
                     android:textAppearance="?android:attr/textAppearanceLarge" />
 
                 <TextView
@@ -73,7 +70,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="16dp"
-                    android:text="@string/login_welcome"
+                    android:text="@string/register_welcome"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
                 <EditText
@@ -83,53 +80,41 @@
                     android:hint="E-Mail"
                     android:inputType="textEmailAddress"
                     android:maxLines="1"
-                    android:singleLine="true"
                     android:nextFocusUp="@id/email" android:nextFocusLeft="@id/email"
-                    />
+                    android:singleLine="true" />
 
                 <EditText
                     android:id="@+id/password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Password"
-                    android:imeActionId="@+id/login"
+                    android:imeActionId="@+id/register"
                     android:imeActionLabel="@string/action_sign_in_short"
                     android:imeOptions="actionUnspecified"
                     android:inputType="textPassword"
                     android:maxLines="1"
-                    android:singleLine="true"
-                    android:nextFocusUp="@id/password" android:nextFocusLeft="@id/password"
+                    android:nextFocusUp="@id/email" android:nextFocusLeft="@id/email"
+                    android:singleLine="true" />
+
+                <CheckBox
+                    android:id="@+id/show_password_checkbox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_password"
                     />
 
                 <Button
-                    android:id="@+id/sign_in_button"
+                    android:id="@+id/register_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="16dp"
                     android:paddingLeft="32dp"
                     android:paddingRight="32dp"
-                    android:text="Login" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:gravity="center_horizontal"
-                    android:text="@string/no_account"
-                    android:textAppearance="?android:attr/textAppearanceSmall" />
-
-                <TextView
-                    android:id="@+id/register_link"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_horizontal"
-                    android:text="@string/register_link"
-                    android:clickable="true"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                    android:text="Register" />
 
             </LinearLayout>
 
-    </android.support.v7.widget.CardView>
+        </android.support.v7.widget.CardView>
     </ScrollView>
 </merge>
