@@ -167,23 +167,8 @@ public class Quiz4Buttons extends Fragment implements View.OnClickListener {
 
 
         mTries += 1;
-        if(mTries >= mMaxTries) { // user entered wrong answer too often
-            String sorry = getString(R.string.sorry_correct_answer) + "\n\"" + correctButton.getText() + "\"";
-            new MaterialDialog.Builder(getActivity())
-                    .title(getString(R.string.sorry_correct_answer_dialog_title))
-                    .content(sorry)
-                    .positiveText(getString(R.string.sorry_dismiss))
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            if(mListener != null) { // go to next page anyway
-                                mListener.correctAnswerAction(mTarget);
-                            }
-                        }
-                    })
-                    .show();
-        }
-        else if(v.getId() == correctButton.getId()) { // correct answer
+
+        if(v.getId() == correctButton.getId()) { // correct answer
             String congratulations = String.format(getString(R.string.congratulations_format_string), mPoints);
             SnackbarManager.show(
                     Snackbar.with(getActivity())
@@ -228,6 +213,22 @@ public class Quiz4Buttons extends Fragment implements View.OnClickListener {
             //Toast.makeText(getActivity(), "RRRRRRRICHTIG!", Toast.LENGTH_SHORT).show();
             submitPointsToBackend(mPoints);
 
+        }
+        else if(mTries >= mMaxTries) { // user entered wrong answer too often
+            String sorry = getString(R.string.sorry_correct_answer) + "\n\"" + correctButton.getText() + "\"";
+            new MaterialDialog.Builder(getActivity())
+                    .title(getString(R.string.sorry_correct_answer_dialog_title))
+                    .content(sorry)
+                    .positiveText(getString(R.string.sorry_dismiss))
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            if(mListener != null) { // go to next page anyway
+                                mListener.correctAnswerAction(mTarget);
+                            }
+                        }
+                    })
+                    .show();
         }
         else { // wrong answer
             mPoints -= mPenalty;

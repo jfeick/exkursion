@@ -76,7 +76,7 @@
                     android:text="@string/login_welcome"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
 
-                <EditText
+                <AutoCompleteTextView
                     android:id="@+id/email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -127,6 +127,24 @@
                     android:text="@string/register_link"
                     android:clickable="true"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/lost_password"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <TextView
+                    android:id="@+id/lost_password_link"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="@string/lost_password_link"
+                    android:clickable="true"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+
 
             </LinearLayout>
 

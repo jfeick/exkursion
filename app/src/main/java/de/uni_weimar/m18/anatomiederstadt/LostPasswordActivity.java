@@ -8,49 +8,41 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.baasbox.android.BaasException;
+import com.baasbox.android.BaasBox;
 import com.baasbox.android.BaasHandler;
 import com.baasbox.android.BaasIOException;
 import com.baasbox.android.BaasResult;
-import com.baasbox.android.BaasUser;
 import com.baasbox.android.RequestToken;
 import com.baasbox.android.json.JsonObject;
+import com.baasbox.android.net.HttpRequest;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 
 
-public class RegisterActivity extends AppCompatActivity {
+public class LostPasswordActivity extends AppCompatActivity {
 
     private final static String SIGNUP_TOKEN_KEY = "signup_token_key";
     public static final String EXTRA_USERNAME = "de.uni_weimar.m18.exkursion.username.EXTRA";
 
     private String mUsername;
-    private String mPassword;
 
     private AutoCompleteTextView mUserView;
-    private EditText mPasswordView;
-    private View mLoginFormView;
-    private View mLoginStatusView;
+    private View mLostPasswordFormView;
+    private View mLostPasswordStatusView;
     private TextView mLoginStatusMessageView;
 
     private RequestToken mSignupOrLogin;
@@ -63,9 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-
-        mContext = this;
+        setContentView(R.layout.activity_lost_password);
 
         if (savedInstanceState != null) {
             mSignupOrLogin = savedInstanceState.getParcelable(SIGNUP_TOKEN_KEY);
@@ -83,37 +73,16 @@ public class RegisterActivity extends AppCompatActivity {
         }
         mUserView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
 
-        mLoginStatusView = findViewById(R.id.register_status);
-        mLoginFormView = findViewById(R.id.register_form);
-        mLoginStatusMessageView = (TextView) findViewById(R.id.register_status_message);
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == R.id.register || actionId == EditorInfo.IME_NULL) {
-                    attemptRegister();
-                    return true;
-                }
-                return false;
-            }
-        });
+        mLostPasswordFormView = findViewById(R.id.lost_password_form);
+        mLoginStatusMessageView = (TextView) findViewById(R.id.lost_password_status_message);
+        mLostPasswordStatusView = findViewById(R.id.lost_password_status);
 
-        CheckBox checkBox = (CheckBox) findViewById(R.id.show_password_checkbox);
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    mPasswordView.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                } else {
-                    mPasswordView.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                }
-            }
-        });
+        mContext = this;
 
-        findViewById(R.id.register_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.lost_password_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                attemptRegister();
+                attemptLostPassword();
             }
         });
     }
@@ -144,18 +113,14 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void completeRegister(boolean success) {
+    private void showLoginActivity() {
         showProgress(false);
         mSignupOrLogin = null;
-        if (success) {
-            Intent intent = new Intent(this, LevelSelectActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
-        } else {
-            mPasswordView.setError(getString(R.string.username_or_password_incorrect));
-            mPasswordView.requestFocus();
-        }
+
+        Intent intent = new Intent(this, LevelSelectActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     @Override
@@ -165,29 +130,17 @@ public class RegisterActivity extends AppCompatActivity {
         return true;
     }
 
-    public void attemptRegister() {
+    public void attemptLostPassword() {
         // Reset errors
         mUserView.setError(null);
-        mPasswordView.setError(null);
 
         // store values at time of login attempt
         mUsername = mUserView.getText().toString();
-        mPassword = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
-        // check for valid password
-        if (TextUtils.isEmpty(mPassword)) {
-            mPasswordView.setError(getString(R.string.password_empty));
-            focusView = mPasswordView;
-            cancel = true;
-        } else if (mPassword.length() < 4) {
-            mPasswordView.setError(getString(R.string.password_too_short));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
+        // check for valid email address
         if (TextUtils.isEmpty(mUsername)) {
             mUserView.setError(getString(R.string.username_empty));
             focusView = mUserView;
@@ -203,40 +156,44 @@ public class RegisterActivity extends AppCompatActivity {
         } else {
             mLoginStatusMessageView.setText(getString(R.string.signing_in));
             showProgress(true);
-            registerWithBaasBox();
+            lostPasswordWithBaasBox();
         }
     }
 
-    private void registerWithBaasBox() {
-        BaasUser user = BaasUser.withUserName(mUsername);
-        user.setPassword(mPassword);
-        JsonObject extras = user.getScope(BaasUser.Scope.PRIVATE)
-                .put("email", mUsername);
-        mSignupOrLogin = user.signup(onComplete);
+    private void lostPasswordWithBaasBox() {
+        //BaasUser user = BaasUser.withUserName(mUsername);
+        BaasBox cli = BaasBox.getDefault();
+        cli.rest(HttpRequest.GET,
+                "user/" + mUsername + "/password/reset",
+                new JsonObject(),
+                false,
+                onComplete
+        );
     }
 
-    private final BaasHandler<BaasUser> onComplete = new BaasHandler<BaasUser>() {
+    private final BaasHandler<JsonObject> onComplete = new BaasHandler<JsonObject>() {
         @Override
-        public void handle(BaasResult<BaasUser> baasResult) {
-            mSignupOrLogin = null;
-            if (baasResult.isFailed()) {
-                Log.d("ERROR", "ERROR", baasResult.error());
-
-            }
+        public void handle(BaasResult<JsonObject> baasResult) {
 
             if (baasResult.error() instanceof BaasIOException) {
                 // TODO - display error that network is down
                 Log.e("ERROR", "Network is down!");
             }
+
+            if (baasResult.isFailed()) {
+                Log.d("ERROR", "ERROR", baasResult.error());
+
+            }
+
             if (baasResult.isSuccess()) {
                 new MaterialDialog.Builder(mContext)
-                        .title(getString(R.string.register_successfull_title))
-                        .content(getString(R.string.register_successfull_content))
-                        .positiveText(R.string.register_successfull_dismiss)
+                        .title(getString(R.string.lost_password_successfull_title))
+                        .content(getString(R.string.lost_password_successfull_content))
+                        .positiveText(R.string.lost_password_successfull_dismiss)
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                completeRegister(true);
+                                showLoginActivity();
                             }
                         })
                         .show();
@@ -247,25 +204,25 @@ public class RegisterActivity extends AppCompatActivity {
     private void showProgress(final boolean show) {
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-        mLoginStatusView.setVisibility(View.VISIBLE);
-        mLoginStatusView.animate()
+        mLostPasswordStatusView.setVisibility(View.VISIBLE);
+        mLostPasswordStatusView.animate()
                 .setDuration(shortAnimTime)
                 .alpha(show ? 1 : 0)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mLoginStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
+                        mLostPasswordStatusView.setVisibility(show ? View.VISIBLE : View.GONE);
                     }
                 });
 
-        mLoginFormView.setVisibility(View.VISIBLE);
-        mLoginFormView.animate()
+        mLostPasswordFormView.setVisibility(View.VISIBLE);
+        mLostPasswordFormView.animate()
                 .setDuration(shortAnimTime)
                 .alpha(show ? 0 : 1)
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
-                        mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                        mLostPasswordFormView.setVisibility(show ? View.GONE : View.VISIBLE);
                     }
                 });
     }

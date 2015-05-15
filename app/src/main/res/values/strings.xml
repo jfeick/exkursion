@@ -60,5 +60,14 @@
     <string name="request_required_email_suffix">Bitte benutze Deine @uni-weimar.de - Email-Adresse</string>
     <string name="show_password">Passwort anzeigen</string>
     <string name="action_logout">Log out</string>
+    <string name="lost_password">Passwort vergessen?</string>
+    <string name="lost_password_link">PASSWORT ZURÜCKSETZEN</string>
+    <string name="title_activity_lost_password">LostPasswordActivity</string>
+    <string name="lost_password_title">Passwort zurücksetzen</string>
+    <string name="lost_password_text">Bitte gib Deine @uni-weimar.de - E-Mail-Adresse ein, an die wir Dir weitere Instruktionen zum zurücksetzen deines Passwortes schicken können.</string>
+    <string name="lost_password_button">Zurücksetzen</string>
+    <string name="lost_password_successfull_title">Rettung naht!</string>
+    <string name="lost_password_successfull_content">Du solltest innerhalb weniger Minuten eine E-Mail mit einem Link bekommen mit dem Du das Passwort für deinen Zugang zurücksetzen kannst.</string>
+    <string name="lost_password_successfull_dismiss">OK</string>
 
 </resources>

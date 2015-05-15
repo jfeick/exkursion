@@ -1,5 +1,7 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
@@ -14,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -25,6 +29,10 @@ import com.baasbox.android.BaasUser;
 import com.baasbox.android.RequestToken;
 
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -35,13 +43,16 @@ public class LoginActivity extends AppCompatActivity {
     private String mUsername;
     private String mPassword;
 
-    private EditText mUserView;
+    private AutoCompleteTextView mUserView;
     private EditText mPasswordView;
     private View mLoginFormView;
     private View mLoginStatusView;
     private TextView mLoginStatusMessageView;
 
     private RequestToken mSignupOrLogin;
+
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$", Pattern.CASE_INSENSITIVE);
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +64,19 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         mUsername = getIntent().getStringExtra(EXTRA_USERNAME);
-        mUserView = (EditText) findViewById(R.id.email);
+        mUserView = (AutoCompleteTextView) findViewById(R.id.email);
         mUserView.setText(mUsername);
+        Account[] accounts = AccountManager.get(this).getAccounts();
+        Set<String> emailSet = new HashSet<String>();
+        for (Account account : accounts) {
+            if (EMAIL_PATTERN.matcher(account.name).matches()) {
+                emailSet.add(account.name);
+            }
+        }
+        mUserView.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, new ArrayList<String>(emailSet)));
+
+
+
         mLoginStatusView = findViewById(R.id.login_status);
         mLoginFormView = findViewById(R.id.login_form);
         mLoginStatusMessageView = (TextView) findViewById(R.id.login_status_message);
@@ -70,6 +92,8 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+
+
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -84,6 +108,18 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, RegisterActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        TextView lostPasswordLink = (TextView) findViewById(R.id.lost_password_link);
+        lostPasswordLink.setPaintFlags(registerLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
+        lostPasswordLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, LostPasswordActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
                 finish();
@@ -162,10 +198,12 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         // check for valid email address
-
-        // TODO: check for uni weimar address
         if (TextUtils.isEmpty(mUsername)) {
             mUserView.setError(getString(R.string.username_empty));
+            focusView = mUserView;
+            cancel = true;
+        } else if (!mUsername.endsWith(getString(R.string.required_email_suffix))) {
+            mUserView.setError(getString(R.string.request_required_email_suffix));
             focusView = mUserView;
             cancel = true;
         }
