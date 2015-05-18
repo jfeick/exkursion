@@ -1,4 +1,4 @@
-package de.uni_weimar.m18.anatomiederstadt;
+package de.uni_weimar.m18.anatomiederstadt.user;
 
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -37,6 +37,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import de.uni_weimar.m18.anatomiederstadt.LevelSelectActivity;
+import de.uni_weimar.m18.anatomiederstadt.R;
 
 
 public class RegisterActivity extends AppCompatActivity {

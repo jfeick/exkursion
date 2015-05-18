@@ -31,12 +31,14 @@ class LevelViewPagerAdapter extends FragmentStatePagerAdapter {
 
 
 
-    public LevelViewPagerAdapter(FragmentManager fm, String basePath) {
+    public LevelViewPagerAdapter(FragmentManager fm, String basePath, String startId) {
         super(fm);
         this.mBasePath = basePath;
         this.mPages = new ArrayList<Fragment>();
-        this.mPages.add(LevelPageFragment.newInstance("start", mBasePath));
+        this.mPages.add(LevelPageFragment.newInstance(startId, mBasePath));
     }
+
+
 
     public void addPage(String pageId) {
         mPages.add(LevelPageFragment.newInstance(pageId, mBasePath));

@@ -1,6 +1,6 @@
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="de.uni_weimar.m18.anatomiederstadt.LoginActivity">
+    tools:context="de.uni_weimar.m18.anatomiederstadt.user.LoginActivity">
 
 
     <LinearLayout

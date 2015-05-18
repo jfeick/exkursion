@@ -17,7 +17,9 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
@@ -50,6 +52,8 @@ import parsii.eval.Expression;
 import parsii.eval.Parser;
 import parsii.eval.Scope;
 import parsii.tokenizer.ParseException;
+
+import static android.content.SharedPreferences.*;
 
 public class LevelPageFragment extends Fragment
  /*   implements Quiz4Buttons.OnFragmentInteractionListener */ {
@@ -225,6 +229,14 @@ public class LevelPageFragment extends Fragment
             for(int i = 0; i < pageList.getLength(); ++i) {
                 if(pageList.item(i).getAttributes().getNamedItem("id").getNodeValue().equals(mPageId)) {
                     page = pageList.item(i);
+                    // save current page id in shared preferences
+                    SharedPreferences sharedPref =
+                            PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+                    Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.user_is_playing_boolean), true);
+                    editor.putString(getString(R.string.resume_base_path), mBasePath);
+                    editor.putString(getString(R.string.resume_page_id), mPageId);
+                    editor.commit();
                 }
             }
             if(page == null) {

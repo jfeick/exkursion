@@ -70,7 +70,7 @@ public class SplashActivity extends FragmentActivity {
                     public void run() {
                         launchMainActivity();
                     }
-                }, 3000);
+                }, 1500);
 
             }
 

@@ -66,15 +66,15 @@
             android:value="f9a5d1652d43d87a792a2e2f73601f8cede9617d" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".user.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
         <activity
-            android:name=".RegisterActivity"
+            android:name=".user.RegisterActivity"
             android:label="@string/title_activity_register" >
         </activity>
         <activity
-            android:name=".LostPasswordActivity"
+            android:name=".user.LostPasswordActivity"
             android:label="@string/title_activity_lost_password" >
         </activity>
     </application>

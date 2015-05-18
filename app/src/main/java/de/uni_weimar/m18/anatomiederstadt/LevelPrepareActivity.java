@@ -17,7 +17,9 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -28,6 +30,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
@@ -44,6 +48,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import de.uni_weimar.m18.anatomiederstadt.data.level.LevelColumns;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
+import de.uni_weimar.m18.anatomiederstadt.util.ParseUtilities;
 
 public class LevelPrepareActivity extends FragmentActivity
         implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -80,7 +85,14 @@ public class LevelPrepareActivity extends FragmentActivity
         ft.add(R.id.container, mDownloadProgressFragment);
         ft.commit();
 
-        getSupportLoaderManager().initLoader(LEVEL_LOADER, null, this);
+        Intent intent = getIntent();
+        boolean resumeLevel = intent.getBooleanExtra(getString(R.string.resume_level_intent_bool), false);
+        String resumeBasePath = intent.getStringExtra(getString(R.string.resume_base_path));
+        if(resumeLevel) {
+            resumeLevel(resumeBasePath, true);
+        } else {
+            getSupportLoaderManager().initLoader(LEVEL_LOADER, null, this);
+        }
 
         FragmentManager fm = getSupportFragmentManager();
         mDownloadFragment = (DownloadFragment) fm.findFragmentByTag(TAG_DOWNLOAD_FRAGMENT);
@@ -190,8 +202,16 @@ public class LevelPrepareActivity extends FragmentActivity
         // TODO Move to another AsyncTask?
         // The parsing of the level.xml file runs on the UI thread now (because this is the
         // onPostExecute callback
+
+        String basePath = mCursor.getString(mCursor.getColumnIndex(LevelColumns.BASE_PATH));
+        resumeLevel(basePath, false);
+    }
+
+    private void resumeLevel(String basePath, boolean resume) {
+        Log.v(LOG_TAG, "resuming Level");
+
         try {
-            parseLevelXML();
+            ParseUtilities.parseLevelXML(basePath, this);
         } catch (IOException e) {
             Log.e(LOG_TAG, "Error - IOException: " + e.getMessage());
             e.printStackTrace();
@@ -202,46 +222,29 @@ public class LevelPrepareActivity extends FragmentActivity
             Log.e(LOG_TAG, "Error - ParserConfigurationException: " + e.getMessage());
             e.printStackTrace();
         }
-        // when we are done, close the cursor (Important!)
-        mCursor.close();
+
+        if(!resume)
+            mCursor.close(); // when we are done, close the cursor (Important!)
 
         LevelStateManager stateManager =
                 ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
         if (stateManager.getLevelXML() != null) {
             Intent intent = new Intent(this, LevelActivity.class);
+            if(resume) {
+                intent.putExtra(getString(R.string.resume_level_intent_bool), true);
+                intent.putExtra(getString(R.string.resume_base_path), basePath);
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                String pageId = sharedPref.getString(getString(R.string.resume_page_id), "start");
+                intent.putExtra(getString(R.string.resume_page_id), pageId);
+            }
             //intent.putExtra("level_path", "level0test");
             startActivity(intent);
         } else {
             // TODO show error message? do something!
         }
+
     }
 
-    private void parseLevelXML() throws IOException, SAXException, ParserConfigurationException {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        long levelId = mCursor.getLong(mCursor.getColumnIndex(LevelColumns._ID));
-        String basePath = mCursor.getString(mCursor.getColumnIndex(LevelColumns.BASE_PATH));
-        String levelFilename = "level.xml";
-        File levelXmlFile = new File(getExternalFilesDir(null)
-                + "/" + basePath + "/" + levelFilename);
-        if(!levelXmlFile.exists()) {
-            return;
-        }
-        FileInputStream fstream = null;
-        try{
-            fstream = new FileInputStream(levelXmlFile);
-            Document xmlDocument = documentBuilder.parse(new InputSource(fstream));
-            LevelStateManager stateManager =
-                    ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
-            stateManager.setLevelXML(xmlDocument);
-            stateManager.setBasePath(basePath);
-        } catch (FileNotFoundException e) {
-            Log.e(LOG_TAG, "Error! FileNotFoundException: " + e.getMessage());
-            e.printStackTrace();
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error! Could not parse level.xml file!");
-            e.printStackTrace();
-        }
-    }
+
 
 }

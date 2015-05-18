@@ -36,13 +36,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.baasbox.android.BaasBox;
 import com.baasbox.android.BaasHandler;
 import com.baasbox.android.BaasResult;
 import com.baasbox.android.BaasUser;
 import com.baasbox.android.RequestToken;
 
 import de.uni_weimar.m18.anatomiederstadt.data.level.LevelColumns;
+import de.uni_weimar.m18.anatomiederstadt.user.LoginActivity;
 
 public class LevelListFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 

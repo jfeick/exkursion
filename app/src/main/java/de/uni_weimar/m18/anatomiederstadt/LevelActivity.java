@@ -16,7 +16,10 @@
 
 package de.uni_weimar.m18.anatomiederstadt;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -54,13 +57,30 @@ public class LevelActivity extends FragmentActivity
         LevelStateManager stateManager =
                 ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
         mBasePath = stateManager.getBasePath();
-        try {
-            NodeList pageList = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page");
-            viewPager.setAdapter(new LevelViewPagerAdapter(fragmentManager, mBasePath));
-        } catch (Exception e) {
-            // TODO c'mon, at least try to care
-        }
 
+        //SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        //boolean resumeLevel = sharedPref.getBoolean(getString(R.string.resume_level_intent_bool), false);
+        Intent intent = getIntent();
+
+        boolean resumeLevel = intent.getBooleanExtra(getString(R.string.resume_level_intent_bool), false);
+        if(resumeLevel) {
+            try {
+                String basePath = intent.getStringExtra(getString(R.string.resume_base_path));
+                String pageId = intent.getStringExtra(getString(R.string.resume_page_id));
+                mBasePath = basePath;
+                viewPager.setAdapter(new LevelViewPagerAdapter(fragmentManager, mBasePath, pageId));
+            }
+            catch (Exception e) {
+                // TODO c'mon, at least try to care
+            }
+        } else {
+            try {
+                NodeList pageList = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page");
+                viewPager.setAdapter(new LevelViewPagerAdapter(fragmentManager, mBasePath, "start"));
+            } catch (Exception e) {
+                // TODO c'mon, at least try to care
+            }
+        }
     }
 
 
@@ -86,21 +106,6 @@ public class LevelActivity extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /*
-    @Override
-    public void switchToNextPage() {
-        Log.v(LOG_TAG, "switch to next page called");
-        viewPager.setCurrentItem(viewPager.getCurrentItem() + 1);
-    }
-    */
-    /*
-
-    @Override
-    public void switchToTarget(int pageNum) {
-        Log.v(LOG_TAG, "switch to target page called: " + Integer.toString(pageNum));
-        viewPager.setCurrentItem(pageNum);
-    }
-    */
 
     @Override
     public void switchToTarget(String pageId) {

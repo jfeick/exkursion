@@ -69,5 +69,13 @@
     <string name="lost_password_successfull_title">Rettung naht!</string>
     <string name="lost_password_successfull_content">Du solltest innerhalb weniger Minuten eine E-Mail mit einem Link bekommen mit dem Du das Passwort für deinen Zugang zurücksetzen kannst.</string>
     <string name="lost_password_successfull_dismiss">OK</string>
+    <string name="user_is_playing_boolean">user_is_playing_boolean</string>
+    <string name="resume_base_path">user_is_playing_level</string>
+    <string name="resume_page_id">user_is_playing_page_id</string>
+    <string name="resume_level_question">Es scheint als würdest Du gerade eine Etappe spielen. Möchtest Du die aktuelle Etappe fortsetzen?</string>
+    <string name="resume_level_title">Etappe fortsetzen?</string>
+    <string name="resume_positive">Ja!</string>
+    <string name="resume_negative">Nicht jetzt!</string>
+    <string name="resume_level_intent_bool">resume_level_intent_bool</string>
 
 </resources>
