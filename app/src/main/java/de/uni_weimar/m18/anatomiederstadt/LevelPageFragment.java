@@ -28,13 +28,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -112,8 +116,8 @@ public class LevelPageFragment extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_level_page, container, false);
 
-        TextView tv = (TextView)view.findViewById(R.id.text_header);
-        tv.setText(mPageId);
+        //TextView tv = (TextView)view.findViewById(R.id.text_header);
+        //tv.setText(mPageId);
 
         if(savedInstanceState != null) {
             mPageId = getArguments().getString(ARG_PARAM1);
@@ -153,6 +157,7 @@ public class LevelPageFragment extends Fragment
     }
 
     void addText(String value) {
+        value = replaceStringWithVars(value, true);
         TextFragment textFragment = TextFragment.newInstance(value);
         mChildFragments.add(textFragment);
     }
@@ -188,8 +193,8 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(latexFragment);
     }
 
-    private void addSlider(int min, int max, String suffix) {
-        SliderFragment sliderFragment = SliderFragment.newInstance(min, max, suffix);
+    private void addSlider(int min, int max, float granularity, String suffix, String var) {
+        SliderFragment sliderFragment = SliderFragment.newInstance(min, max, granularity, suffix, var);
         mChildFragments.add(sliderFragment);
     }
 
@@ -331,10 +336,14 @@ public class LevelPageFragment extends Fragment
                     NamedNodeMap attributes = item.getAttributes();
                     Node min = attributes.getNamedItem("min");
                     Node max = attributes.getNamedItem("max");
+                    Node granularity = attributes.getNamedItem("granularity");
                     Node suffix = attributes.getNamedItem("suffix");
+                    Node var = attributes.getNamedItem("var");
                     addSlider(Integer.parseInt(min.getNodeValue()),
                             Integer.parseInt(max.getNodeValue()),
-                            suffix.getNodeValue());
+                            Float.parseFloat(granularity.getNodeValue()),
+                            suffix.getNodeValue(),
+                            var.getNodeValue());
                 }
                 if(item.getNodeName().equals("location")) {
                     NamedNodeMap attributes = item.getAttributes();
@@ -388,6 +397,11 @@ public class LevelPageFragment extends Fragment
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
             e.printStackTrace();
+            new MaterialDialog.Builder(getActivity())
+                    .title("Error")
+                    .content("Fehler während des Verarbeitens der Level-Datei!\n" + e.getMessage())
+                    .positiveText("OK")
+                    .show();
         }
         commitChildFragments();
     }
@@ -398,15 +412,29 @@ public class LevelPageFragment extends Fragment
         stateManager.saveFloat(name, Float.parseFloat(value));
     }
 
-    private void evaluateMath(String var, String expression) {
+    private String replaceStringWithVars(String expression, boolean printFloat)
+    {
         Matcher m = Pattern.compile("\\$([_a-zA-Z][_a-zA-Z0-9]{0,30})").matcher(expression);
         LevelStateManager stateManager =
                 ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
         String replacedExpr = expression;
         while(m.find()) {
-            replacedExpr = replacedExpr.replace(m.group(0),
-                    Float.toString(stateManager.getFloat(m.group(1))));
+            float value = stateManager.getFloat(m.group(1));
+            if(printFloat) {
+                String floatValue = new DecimalFormat("#.##").format(value);
+                replacedExpr = replacedExpr.replace(m.group(0), floatValue);
+            }
+            else {
+                replacedExpr = replacedExpr.replace(m.group(0), Float.toString(value));
+            }
         }
+        return replacedExpr;
+    }
+
+    private void evaluateMath(String var, String expression) {
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+        String replacedExpr = replaceStringWithVars(expression, false);
         Scope scope = Scope.create();
         Expression expr;
         double result = 1.0;

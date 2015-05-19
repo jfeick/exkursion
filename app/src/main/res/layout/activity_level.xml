@@ -1,7 +1,23 @@
-<de.uni_weimar.m18.anatomiederstadt.LevelViewPager
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/pager"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     >
-</de.uni_weimar.m18.anatomiederstadt.LevelViewPager>
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/levelProgress"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginTop="-6dp"
+        android:progress="0" />
+
+    <de.uni_weimar.m18.anatomiederstadt.LevelViewPager
+
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:id="@+id/pager"
+        >
+    </de.uni_weimar.m18.anatomiederstadt.LevelViewPager>
+</LinearLayout>

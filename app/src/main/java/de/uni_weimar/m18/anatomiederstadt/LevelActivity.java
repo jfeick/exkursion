@@ -26,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 import org.w3c.dom.NodeList;
 
@@ -44,6 +45,8 @@ public class LevelActivity extends FragmentActivity
                    InputFragment.OnFragmentInteractionListener,
                    QuizMulti.OnFragmentInteractionListener {
 
+    private ProgressBar mProgressBar;
+
     private static final String LOG_TAG = LevelSelectActivity.class.getSimpleName();
     ViewPager viewPager = null;
     String mBasePath = null;
@@ -53,6 +56,7 @@ public class LevelActivity extends FragmentActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level);
         FragmentManager fragmentManager = getSupportFragmentManager();
+        mProgressBar = (ProgressBar) findViewById(R.id.levelProgress);
         viewPager = (ViewPager) findViewById(R.id.pager);
         LevelStateManager stateManager =
                 ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
@@ -113,6 +117,7 @@ public class LevelActivity extends FragmentActivity
         LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
         int id = adapter.getItemById(pageId);
         viewPager.setCurrentItem(id);
+        incrementProgress();
     }
 
     @Override
@@ -121,6 +126,15 @@ public class LevelActivity extends FragmentActivity
         //adapter.addPage(pageId);
         //switchToNextPage();
         switchToTarget(pageId);
+    }
+
+
+    private void incrementProgress() {
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication)getApplicationContext()).getStateManager(this);
+        int numPages = stateManager.getLevelXML().getDocumentElement().getElementsByTagName("page").getLength();
+        int step = 100 / numPages;
+        mProgressBar.setProgress(mProgressBar.getProgress() + step);
     }
 
     @Override

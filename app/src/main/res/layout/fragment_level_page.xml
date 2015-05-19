@@ -20,12 +20,15 @@
             android:layout_height="wrap_content"
             android:id="@+id/layout_container">
 
+            <!-- TODO: delete this textview -->
             <TextView
                  android:layout_width="match_parent"
                  android:layout_height="wrap_content"
                  android:textAppearance="?android:attr/textAppearanceMedium"
                  android:text="DEBUGGING TEXT (IGNORE)"
-                 android:id="@+id/text_header" />
+                 android:id="@+id/text_header"
+                 android:visibility="gone"
+                />
         </LinearLayout>
     </ScrollView>
 </FrameLayout>

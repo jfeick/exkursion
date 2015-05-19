@@ -62,7 +62,8 @@
             android:id="@+id/seekBar"
             android:thumb="@drawable/thumb"
             android:progressDrawable="@drawable/seek_progress"
-            android:layout_below="@+id/balloonSpace" />
+            android:layout_below="@+id/balloonSpace"
+            />
 
     </RelativeLayout>
 

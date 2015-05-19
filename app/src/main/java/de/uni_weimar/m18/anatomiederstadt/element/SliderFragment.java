@@ -30,7 +30,11 @@ import android.widget.SeekBar;
 import android.widget.Space;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
+
+import de.uni_weimar.m18.anatomiederstadt.AnatomieDerStadtApplication;
 import de.uni_weimar.m18.anatomiederstadt.R;
+import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
 
 
 /**
@@ -47,19 +51,25 @@ public class SliderFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
+    private static final String ARG_PARAM4 = "param4";
+    private static final String ARG_PARAM5 = "param5";
 
     private int mMin;
     private int mMax;
     private String mSuffix;
+    private float mGranularity;
+    private String mVar;
 
 
     // TODO: Rename and change types and number of parameters
-    public static SliderFragment newInstance(int min, int max, String suffix) {
+    public static SliderFragment newInstance(int min, int max, float granularity, String suffix, String var) {
         SliderFragment fragment = new SliderFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_PARAM1, min);
         args.putInt(ARG_PARAM2, max);
-        args.putString(ARG_PARAM3, suffix);
+        args.putFloat(ARG_PARAM3, granularity);
+        args.putString(ARG_PARAM4, suffix);
+        args.putString(ARG_PARAM5, var);
         fragment.setArguments(args);
         return fragment;
     }
@@ -74,7 +84,9 @@ public class SliderFragment extends Fragment {
         if (getArguments() != null) {
             mMin = getArguments().getInt(ARG_PARAM1);
             mMax = getArguments().getInt(ARG_PARAM2);
-            mSuffix = getArguments().getString(ARG_PARAM3);
+            mGranularity = getArguments().getFloat(ARG_PARAM3);
+            mSuffix = getArguments().getString(ARG_PARAM4);
+            mVar = getArguments().getString(ARG_PARAM5);
         }
     }
 
@@ -84,6 +96,9 @@ public class SliderFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_slider, container, false);
         SeekBar sb = (SeekBar) view.findViewById(R.id.seekBar);
+        // scale mMin and mMax
+        mMin = (int)(mMin / mGranularity);
+        mMax = (int)(mMax / mGranularity);
         sb.setMax(mMax - mMin);
         sb.setProgress((mMax - mMin) / 2);
         final RelativeLayout balloon = (RelativeLayout) view.findViewById(R.id.indicatorBalloon);
@@ -91,6 +106,7 @@ public class SliderFragment extends Fragment {
 
         final Context context = getActivity();
         final TextView balloonText = (TextView) view.findViewById(R.id.indicatorTextView);
+        final float[] value = {0.0f};
         sb.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -100,7 +116,9 @@ public class SliderFragment extends Fragment {
                         RelativeLayout.LayoutParams.WRAP_CONTENT);
                 p.addRule(RelativeLayout.ABOVE, seekBar.getId());
                 Rect thumbRect = seekBar.getThumb().getBounds();
-                balloonText.setText(String.valueOf(mMin + progress) + " " + mSuffix);
+                value[0] = mMin + progress * mGranularity;
+                String valueString = new DecimalFormat("#.##").format(value[0]);
+                balloonText.setText(String.valueOf(valueString) + " " + mSuffix);
                 int balloonWidth = balloonText.getWidth();
                 p.setMargins(thumbRect.centerX() - balloonWidth / 2, 0, 0, 0);
                 balloon.setLayoutParams(p);
@@ -134,7 +152,9 @@ public class SliderFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                LevelStateManager stateManager =
+                        ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+                stateManager.saveFloat(mVar, value[0]);
             }
         });
         return view;
