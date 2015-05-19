@@ -16,19 +16,22 @@
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" tools:context="de.uni_weimar.m18.anatomiederstadt.element.ImageFragment">
+    android:layout_height="match_parent" tools:context="de.uni_weimar.m18.anatomiederstadt.element.ScoreFragment">
 
-
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:layout_gravity="center"
-        android:adjustViewBounds="true"
-        android:scaleType="fitStart"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
+    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
+        android:linksClickable="true"
+        android:paddingLeft="@dimen/activity_vertical_margin"
+        android:paddingRight="@dimen/activity_vertical_margin"
+        android:id="@+id/text_view"
+        android:textColor="@color/Grau_dunkel"
         android:layout_marginBottom="16dp"
-
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_gravity="center"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:textSize="52sp"
+        android:text=""
         />
+
 </FrameLayout>

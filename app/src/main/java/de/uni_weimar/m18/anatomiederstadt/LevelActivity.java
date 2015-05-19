@@ -31,6 +31,7 @@ import android.widget.ProgressBar;
 import org.w3c.dom.NodeList;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.InputCheckFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.InputFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMulti;
@@ -43,7 +44,8 @@ public class LevelActivity extends FragmentActivity
                    LocationFragment.OnFragmentInteractionListener,
                    ButtonFragment.OnFragmentInteractionListener,
                    InputFragment.OnFragmentInteractionListener,
-                   QuizMulti.OnFragmentInteractionListener {
+                   QuizMulti.OnFragmentInteractionListener,
+                   InputCheckFragment.OnFragmentInteractionListener {
 
     private ProgressBar mProgressBar;
 
@@ -116,7 +118,7 @@ public class LevelActivity extends FragmentActivity
         Log.v(LOG_TAG, "page switch triggered");
         LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
         int id = adapter.getItemById(pageId);
-        viewPager.setCurrentItem(id);
+        viewPager.setCurrentItem(id, true);
         incrementProgress();
     }
 
@@ -155,5 +157,23 @@ public class LevelActivity extends FragmentActivity
     @Override
     public void onMultiClick(String pageId) {
         switchToTarget(pageId);
+    }
+
+    @Override
+    public void onInputCheckClick(String pageId) {
+        switchToTarget(pageId);
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.v(LOG_TAG, "page switch triggered");
+        LevelViewPagerAdapter adapter = (LevelViewPagerAdapter) viewPager.getAdapter();
+        int current_id = viewPager.getCurrentItem();
+        if(current_id > 0)
+            viewPager.setCurrentItem(current_id - 1, true);
+        else
+            super.onBackPressed();
+
+
     }
 }

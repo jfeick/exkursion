@@ -98,7 +98,7 @@ public class LevelSelectActivity extends AppCompatActivity {
 
                         @Override
                         public void onNegative(MaterialDialog dialog) {
-                            clearResumeState();
+                            //clearResumeState();
                         }
                     })
                     .show();

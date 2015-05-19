@@ -192,7 +192,7 @@ public class LocationFragment extends Fragment
 
         float distance = target.distanceTo(location);
         Log.d(LOG_TAG, "Distance to target is approximately " + Float.toString(distance) + "meters");
-        if (distance > 15.0f) {
+        if (distance > 25.0f) {
             if (mInfoText != null) {
                 String distanceFormat = new DecimalFormat("#").format(distance);
                 mInfoText.setText("Du bist noch ca " + distanceFormat + "m entfernt.");

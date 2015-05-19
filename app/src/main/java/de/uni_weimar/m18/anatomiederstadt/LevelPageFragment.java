@@ -29,6 +29,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.baasbox.android.BaasBox;
+import com.baasbox.android.BaasHandler;
+import com.baasbox.android.BaasResult;
+import com.baasbox.android.json.JsonException;
+import com.baasbox.android.json.JsonObject;
+import com.baasbox.android.net.HttpRequest;
+import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.EventListener;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -44,11 +53,13 @@ import java.util.regex.Pattern;
 
 import de.uni_weimar.m18.anatomiederstadt.element.ButtonFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.ImageFragment;
+import de.uni_weimar.m18.anatomiederstadt.element.InputCheckFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.InputFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LatexFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.LocationFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.Quiz4Buttons;
 import de.uni_weimar.m18.anatomiederstadt.element.QuizMulti;
+import de.uni_weimar.m18.anatomiederstadt.element.ScoreFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.SliderFragment;
 import de.uni_weimar.m18.anatomiederstadt.element.TextFragment;
 import de.uni_weimar.m18.anatomiederstadt.util.LevelStateManager;
@@ -377,6 +388,17 @@ public class LevelPageFragment extends Fragment
                     Node var = attributes.getNamedItem("var");
                     addInput(buttonCaption.getNodeValue(), var.getNodeValue(), target.getNodeValue());
                 }
+                if(item.getNodeName().equals("inputcheck")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node buttonCaption = attributes.getNamedItem("caption");
+                    Node target = attributes.getNamedItem("target");
+                    Node var = attributes.getNamedItem("var");
+                    Node correct = attributes.getNamedItem("correct");
+                    Node points = attributes.getNamedItem("points");
+                    Node hint = attributes.getNamedItem("hint");
+                    addInputCheck(buttonCaption.getNodeValue(), var.getNodeValue(), target.getNodeValue(),
+                            correct.getNodeValue(), points.getNodeValue(), hint.getNodeValue());
+                }
                 if(item.getNodeName().equals("quizmulti")) {
                     NamedNodeMap attributes = item.getAttributes();
                     Node target = attributes.getNamedItem("target");
@@ -393,6 +415,19 @@ public class LevelPageFragment extends Fragment
                         addQuizMulti(options, target.getNodeValue());
                     }
                 }
+                if(item.getNodeName().equals("evalpoints")) {
+                    NamedNodeMap attributes = item.getAttributes();
+                    Node var = attributes.getNamedItem("var");
+                    Node correct = attributes.getNamedItem("correct");
+                    Node step = attributes.getNamedItem("step");
+                    Node points = attributes.getNamedItem("points");
+                    Node penalty = attributes.getNamedItem("penalty");
+                    evaluatePoints(var.getNodeValue(), correct.getNodeValue(), step.getNodeValue(),
+                            points.getNodeValue(), penalty.getNodeValue());
+                }
+                if(item.getNodeName().equals("score")) {
+                    addScore();
+                }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
@@ -404,6 +439,73 @@ public class LevelPageFragment extends Fragment
                     .show();
         }
         commitChildFragments();
+    }
+
+    private void addScore() {
+        ScoreFragment scoreFragment = ScoreFragment.newInstance();
+        mChildFragments.add(scoreFragment);
+    }
+
+    private void addInputCheck(String caption, String var, String target, String correct, String points, String hint) {
+        InputCheckFragment inputCheckFragment =
+                InputCheckFragment.newInstance(caption, var, target, correct,
+                        Integer.parseInt(points), hint, mPageId);
+        mChildFragments.add(inputCheckFragment);
+    }
+
+    private void evaluatePoints(String var, String correct, String step, String points, String penalty) {
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+        float variableF = stateManager.getFloat(var);
+        float correctF  = Float.parseFloat(correct);
+        float stepF     = Float.parseFloat(step);
+        int pointsI     = Integer.parseInt(points);
+        int penaltyI    = Integer.parseInt(penalty);
+        float distance = Math.abs(correctF - variableF);
+        float steps = distance / stepF;
+        int final_penalty = penaltyI * (int) steps;
+        int final_points = pointsI - final_penalty;
+
+        String congratulations = String.format("%d Punkte", final_points);
+        SnackbarManager.show(
+                Snackbar.with(getActivity())
+                        .position(Snackbar.SnackbarPosition.TOP)
+                        .margin(32, 32)
+                        .backgroundDrawable(R.drawable.points_snackbar_shape)
+                        .text(congratulations)
+        );
+        submitPointsToBackend(final_points);
+    }
+
+    private void submitPointsToBackend(int points) {
+        BaasBox cli = BaasBox.getDefault();
+        LevelStateManager stateManager =
+                ((AnatomieDerStadtApplication) getActivity().getApplicationContext()).getStateManager(getActivity());
+        JsonObject parameters = new JsonObject();
+        try {
+            parameters.put("level", stateManager.getBasePath());
+            parameters.put("question", "q" + mPageId);
+            parameters.put("score", points);
+        } catch(JsonException e) {
+
+        }
+        cli.rest(HttpRequest.POST,
+                "plugin/updatescore.bb",
+                parameters,
+                true,
+                new BaasHandler<JsonObject>() {
+                    @Override
+                    public void handle(BaasResult<JsonObject> baasResult) {
+                        Log.d(LOG_TAG, "result: " + baasResult.toString());
+                        if (baasResult.isSuccess()) {
+                            Log.d(LOG_TAG, "Score for question " + mPageId + " submitted successfully.");
+                        } else {
+                            Log.d(LOG_TAG, "Error. Could not submit score.");
+                        }
+                    }
+
+                }
+        );
     }
 
     private void storeVariable(String name, String value) {
