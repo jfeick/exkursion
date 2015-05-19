@@ -17,8 +17,10 @@
 package de.uni_weimar.m18.anatomiederstadt;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -48,6 +50,7 @@ import org.w3c.dom.NodeList;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -90,6 +93,8 @@ public class LevelPageFragment extends Fragment
 
     private OnFragmentInteractionListener mListener;
 
+    private View mContainer;
+
     public interface OnFragmentInteractionListener {
         /*
         public void switchToNextPage();
@@ -125,10 +130,11 @@ public class LevelPageFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_level_page, container, false);
+        mContainer = inflater.inflate(R.layout.fragment_level_page, container, false);
 
         //TextView tv = (TextView)view.findViewById(R.id.text_header);
         //tv.setText(mPageId);
+
 
         if(savedInstanceState != null) {
             mPageId = getArguments().getString(ARG_PARAM1);
@@ -138,7 +144,7 @@ public class LevelPageFragment extends Fragment
         }
 
 
-        return view;
+        return mContainer;
     }
 
     @Override
@@ -434,6 +440,9 @@ public class LevelPageFragment extends Fragment
                 if(item.getNodeName().equals("score")) {
                     addScore();
                 }
+                if(item.getNodeName().equals("survey")) {
+                    registerSurveyClickHandler();
+                }
             }
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error! Exception " + e.getMessage());
@@ -447,9 +456,54 @@ public class LevelPageFragment extends Fragment
         commitChildFragments();
     }
 
+    private void registerSurveyClickHandler() {
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+
+                        askForSurvey();
+
+                }
+            }, 10000);
+
+    }
+
+    private void askForSurvey() {
+        new MaterialDialog.Builder(getActivity())
+                .title("Geschafft")
+                .content("Würdest Du noch kurz an einer kleinen Umfrage zu dieser Software teilnehmen?")
+                .positiveText("Ja")
+                .negativeText("Lieber nicht")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        Intent intent = new Intent(getActivity(), SurveyActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        Intent intent = new Intent(getActivity(), LevelSelectActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                })
+                .show();
+
+    }
+
     private void addScore() {
         ScoreFragment scoreFragment = ScoreFragment.newInstance();
         mChildFragments.add(scoreFragment);
+        // delete resume state
+        SharedPreferences sharedPref =
+                PreferenceManager.getDefaultSharedPreferences(getActivity().getApplicationContext());
+        Editor editor = sharedPref.edit();
+        editor.putBoolean(getString(R.string.user_is_playing_boolean), false);
     }
 
     private void addInputCheck(String caption, String var, String target, String correct, String points, String hint) {

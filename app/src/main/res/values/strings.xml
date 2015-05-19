@@ -80,5 +80,6 @@
     <string name="congratulations_exact_format_string">Exakt richtig! %d Punkte!</string>
     <string name="congratulations_not_quite_format_string">Nicht ganz... aber immerhin %d Punkte!</string>
     <string name="congratulations_wrong_format_string">Ähhhm... Nein? %d Punkte.</string>
+    <string name="title_activity_survey">SurveyActivity</string>
 
 </resources>
