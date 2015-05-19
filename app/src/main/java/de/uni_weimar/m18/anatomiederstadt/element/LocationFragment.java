@@ -69,7 +69,8 @@ public class LocationFragment extends Fragment
     private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
     private LocationRequest mLocationRequest;
 
-    TextView mInfoText;
+    private int mCheatCounter = 0;
+    private TextView mInfoText;
 
     private OnFragmentInteractionListener mListener;
 
@@ -135,7 +136,7 @@ public class LocationFragment extends Fragment
             @Override
             public void onClick(View v) {
                 Uri gmmIntentUri = Uri.parse("geo:" + mLatitude + "," + mLongitude + "?q=" +
-                                             mLatitude + "," + mLongitude + "(Ziel)");
+                        mLatitude + "," + mLongitude + "(Ziel)");
                 Log.v(LOG_TAG, "Requested location intent: " + gmmIntentUri.toString());
                 Intent intent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 intent.setPackage("com.google.android.apps.maps");
@@ -144,7 +145,15 @@ public class LocationFragment extends Fragment
         });
 
         mInfoText = (TextView) view.findViewById(R.id.locationInfoText);
-
+        mInfoText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCheatCounter++;
+                if(mCheatCounter >= 8) {
+                    mListener.inProximityAction(mTargetId);
+                }
+            }
+        });
         final LocationListener locationListener = this;
 
         Button updateButton = (Button)view.findViewById(R.id.updateLocationButton);

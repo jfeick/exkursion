@@ -227,8 +227,8 @@ public class LevelPageFragment extends Fragment
         mChildFragments.add(inputFragment);
     }
 
-    private void addQuizMulti(ArrayList<String> options, String targetId) {
-        QuizMulti quizMulti = QuizMulti.newInstance(options, targetId);
+    private void addQuizMulti(ArrayList<String> options, ArrayList<String> correctList, String targetId, String points) {
+        QuizMulti quizMulti = QuizMulti.newInstance(options, correctList, targetId, Integer.parseInt(points), mPageId);
         mChildFragments.add(quizMulti);
     }
 
@@ -402,17 +402,23 @@ public class LevelPageFragment extends Fragment
                 if(item.getNodeName().equals("quizmulti")) {
                     NamedNodeMap attributes = item.getAttributes();
                     Node target = attributes.getNamedItem("target");
+                    Node points = attributes.getNamedItem("points");
                     //NodeList optionsList = item.getElementsByTagName("option");
                     Node parent = item.getParentNode();
                     ArrayList<String> options = new ArrayList<>();
+                    ArrayList<String> correctList = new ArrayList<>();
                     if (parent instanceof Element) {
                         final Element e = (Element) parent;
                         NodeList optionsList = e.getElementsByTagName("option");
                         for(int k = 0; k < optionsList.getLength(); ++k) {
                             Node option = optionsList.item(k);
+                            if(option.getAttributes().getNamedItem("correct").getNodeValue().equals("true"))
+                                correctList.add("true");
+                            else
+                                correctList.add("false");
                             options.add(option.getTextContent());
                         }
-                        addQuizMulti(options, target.getNodeValue());
+                        addQuizMulti(options, correctList, target.getNodeValue(), points.getNodeValue());
                     }
                 }
                 if(item.getNodeName().equals("evalpoints")) {
